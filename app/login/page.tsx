@@ -2,11 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import { FcGoogle } from "react-icons/fc";
 
 const Login: React.FC = () => {
   const [Email, setEmail] = useState("");
@@ -38,7 +36,7 @@ const Login: React.FC = () => {
       if (response.ok) {
         toast.success("Login successful!");
         setTimeout(() => {
-          router.push(`/dashboard?id=${encodeURIComponent(result.userId)}`);
+          router.push(`/Dashboard?id=${encodeURIComponent(result.userId)}`);
         }, 1500);
       } else {
         toast.error(result.message || "Login failed!");
@@ -51,9 +49,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center bg-white bg-center relative p-4"
-    >
+    <div className="flex min-h-screen items-center justify-center bg-white bg-center relative p-4">
       <div className="absolute inset-0 bg-gray-100 shadow-lg"></div>
       <ToastContainer className="text-xs" />
       <div className="relative z-10 w-full max-w-md p-8 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-xl text-center text-black">
@@ -89,11 +85,11 @@ const Login: React.FC = () => {
           </div>
           <div className="text-center text-xs">
             Don’t have an account?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">Sign Up</Link>
+            <Link href="/Register" className="text-blue-600 hover:underline">Sign Up</Link>
           </div>
         </form>
         <footer className="mt-4 text-center text-xs">
-          <p>Lost and Found Software - PHDev-Tech Solutions</p>
+          <p>Axxet Flow - PHDev-Tech Solutions</p>
         </footer>
       </div>
     </div>

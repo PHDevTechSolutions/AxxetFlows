@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { IoIosMenu } from 'react-icons/io';
-import { GoSignOut } from "react-icons/go";
-import { IoNotificationsOutline } from "react-icons/io5";
+
+import { FaBars, FaBell, FaSignOutAlt } from "react-icons/fa";
 
 const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) => {
   const [userName, setUserName] = useState("");
@@ -79,14 +78,14 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
     <div className="flex justify-between items-center p-4 bg-[#F1F5F9] text-[#334155] shadow-md relative">
       <div className="flex items-center">
         <button onClick={onToggleSidebar} className="p-2">
-          <IoIosMenu size={24} />
+          <FaBars size={15} />
         </button>
       </div>
 
       <div className="flex items-center gap-4 text-xs relative">
         <div className="relative">
           <button onClick={() => setShowNotifications(!showNotifications)} className="relative">
-            <IoNotificationsOutline size={20} />
+            <FaBell size={15} />
             {notifications.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] px-1 rounded-full">
                 {notifications.length}
@@ -110,7 +109,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
         <span className="capitalize">Hello, {userName}</span>
         <button className="bg-red-700 px-2 py-2 text-white rounded flex gap-1" onClick={() => setShowLogoutModal(true)}>
-          <GoSignOut size={15} />Logout
+          <FaSignOutAlt size={15} />Logout
         </button>
       </div>
 

@@ -11,17 +11,15 @@ import { FcGoogle } from "react-icons/fc";
 const Register: React.FC = () => {
   const [userName, setuserName] = useState("");
   const [Email, setEmail] = useState("");
-  const [Firstname, setFirstname] = useState("");
-  const [Lastname, setLastname] = useState("");
   const [Password, setPassword] = useState("");
   const router = useRouter();
 
-  const Role = "Subscribers"; // Hidden default role
+  const Role = "Admin"; // Hidden default role
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userName || !Email || !Password || !Firstname || !Lastname) {
+    if (!userName || !Email || !Password) {
       toast.error("All fields are required!");
       return;
     }
@@ -32,7 +30,7 @@ const Register: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userName, Email, Password, Firstname, Lastname, Role }),
+        body: JSON.stringify({ userName, Email, Password, Role }),
       });
 
       const result = await response.json();
@@ -40,7 +38,7 @@ const Register: React.FC = () => {
       if (response.ok) {
         toast.success("Registration successful!");
         setTimeout(() => {
-          router.push("/login");
+          router.push("/Login");
         }, 1200);
       } else {
         toast.error(result.message || "Registration failed!");
@@ -51,47 +49,34 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-white bg-center relative p-4">
       <ToastContainer className="text-xs" />
-      <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-lg shadow-md">
-        <div className="hidden md:block md:w-1/2 p-8">
-          <Image src="/images/illustration/illustration.svg" alt="Illustration" width={350} height={350} className="object-cover h-full w-full rounded-l-lg" />
-        </div>
-        <div className="w-full md:w-1/2 p-8">
-          <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Username</label>
-              <input type="text" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize" placeholder="Enter your Username" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Firstname</label>
-              <input type="text" value={Firstname} onChange={(e) => setFirstname(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize" placeholder="Enter your Firstname" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Lastname</label>
-              <input type="text" value={Lastname} onChange={(e) => setLastname(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize" placeholder="Enter your Lastname" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-              <input type="email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Email" />
-            </div>
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>
-              <input type="password" placeholder="6+ Characters, 1 Capital letter" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div className="mb-4">
-              <button type="submit" className="w-full text-xs py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 shadow-lg">Create Account</button>
-            </div>
-          </form>
-          <div className="text-center text-xs">
-            Don’t have an account?{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">Sign In</Link>
+      <div className="relative z-10 w-full max-w-md p-8 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-xl text-center text-black">
+        <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
+        <form onSubmit={handleSubmit} className="text-left">
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Username</label>
+            <input type="text" value={userName} onChange={(e) => setuserName(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize" placeholder="Enter your Username" />
           </div>
-          <footer className="absolute bottom-4 right-4 text-xs text-gray-600">
-            <p>Lost and Found Software - PHDev-Tech Solutions</p>
-          </footer>
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Email" />
+          </div>
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" placeholder="6+ Characters, 1 Capital letter" value={Password} onChange={(e) => setPassword(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div className="mb-4">
+            <button type="submit" className="w-full text-xs py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 shadow-lg">Create Account</button>
+          </div>
+        </form>
+        <div className="text-center text-xs">
+          Already have a account?{" "}
+          <Link href="/Login" className="text-blue-600 hover:underline">Sign In</Link>
         </div>
+        <footer className="mt-4 text-center text-xs">
+          <p>AxxetFlow - PHDev-Tech Solutions</p>
+        </footer>
       </div>
     </div>
   );

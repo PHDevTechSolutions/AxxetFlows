@@ -1,6 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { Server } from "socket.io";
 
 // Ensure the MONGODB_URI environment variable is defined
 if (!process.env.MONGODB_URI) {
@@ -31,17 +30,11 @@ export default clientPromise;
 // Connect to the database
 export async function connectToDatabase() {
   const client = await clientPromise;
-  return client.db("lostfound"); // Return the 'ecoshift' database
-}
-
-// Function to broadcast new posts
-let io: Server | null = null;
-export function setSocketServer(server: Server) {
-  io = server;
+  return client.db("inventory"); // Return the 'ecoshift' database
 }
 
 // Register a new user
-export async function registerUser({ userName, Email, Password, Firstname, Lastname, Role }: { userName: string; Email: string; Password: string; Firstname: string; Lastname: string; Role: string;}) {
+export async function registerUser({ userName, Email, Password, Role }: { userName: string; Email: string; Password: string; Role: string;}) {
   const db = await connectToDatabase();
   const usersCollection = db.collection("users");
 
@@ -58,8 +51,6 @@ export async function registerUser({ userName, Email, Password, Firstname, Lastn
   await usersCollection.insertOne({
     userName,
     Email,
-    Firstname,
-    Lastname,
     Role,
     Password: hashedPassword,
     createdAt: new Date(),

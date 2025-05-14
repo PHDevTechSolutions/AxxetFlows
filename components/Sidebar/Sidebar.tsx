@@ -1,10 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { RxCaretDown, RxCaretLeft } from "react-icons/rx";
-import { FaRegCircle  } from "react-icons/fa";
-import { HiHome, HiClipboardList, HiPlusCircle, HiUserGroup, HiChartBar, HiCog, HiOutlineClock, } from "react-icons/hi";
-import { HiArchiveBox, HiTag } from "react-icons/hi2";
+import { FaChevronDown, FaChevronLeft, FaRegCircle, FaTachometerAlt, FaBox, FaShoppingCart, FaTruck, FaArrowCircleDown, FaExchangeAlt, FaExclamationTriangle, FaChartBar, FaTags, FaTruckLoading, FaUsersCog, FaCog } from 'react-icons/fa';
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,7 +10,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
   const [collapsed, setCollapsed] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [userId, setUserId] = useState<string | null>(null);
-  const [userDetails, setUserDetails] = useState({Firstname: "", Lastname: "", Location: "", Role: "",});
+  const [userDetails, setUserDetails] = useState({ Firstname: "", Lastname: "", Location: "", Role: "", });
   const router = useRouter();
 
   useEffect(() => {
@@ -57,66 +54,78 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
 
   const menuItems = [
     {
-      title: "Report Lost Item",
-      icon: HiPlusCircle,
+      title: "Inventory",
+      icon: FaBox,
       subItems: [
-        { title: "Report Items", href: `/Report/ReportItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "View Inventory", href: `/Report/ReportItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "Report Found Item",
-      icon: HiPlusCircle,
+      title: "Purchase Orders",
+      icon: FaShoppingCart,
       subItems: [
-        { title: "Report Found Items", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Track Purchase Orders", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "All Reports",
-      icon: HiClipboardList,
+      title: "Receiving",
+      icon: FaTruck,
       subItems: [
-        { title: "Lost & Found Items", href: `/Report/AllReport${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Logs and Goods", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "Approvals",
-      icon: HiOutlineClock,
+      title: "Stock Out / Issuance",
+      icon: FaArrowCircleDown,
       subItems: [
-        { title: "Approve/Pending Reports", href: `/Report/Approval${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Sales and Stocks Records", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "Resolved Cases",
-      icon: HiArchiveBox,
+      title: "Transfers",
+      icon: FaExchangeAlt,
       subItems: [
-        { title: "Returned/Found Items", href: `/Report/ResolvedCases${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Branches", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+      ],
+    },
+    {
+      title: "Reorder Alerts",
+      icon: FaExclamationTriangle,
+      subItems: [
+        { title: "Reorder Items", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+      ],
+    },
+    {
+      title: "Reports",
+      icon: FaChartBar,
+      subItems: [
+        { title: "Inventory and Sales Reports", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
       title: "Categories",
-      icon: HiTag,
+      icon: FaTags,
       subItems: [
-        { title: "Manage Item Categories", href: `/Item/Categories${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Product Categories", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "User Management",
-      icon: HiUserGroup,
+      title: "Suppliers",
+      icon: FaTruckLoading,
       subItems: [
-        {
-          title: "List of Users", href: `/User/ListofUser${userId ? `?id=${encodeURIComponent(userId)}` : ""}`,
-        },
+        { title: "List of Suppliers", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "Reports Analytics",
-      icon: HiChartBar,
+      title: "Users & Roles",
+      icon: FaUsersCog,
       subItems: [
-        { title: "Graph and Charts", href: `/Report/ReportAnalytics${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Manage Access Control Users", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
-      title: "Settings",
-      icon: HiCog,
+      title: "Profile",
+      icon: FaCog,
       subItems: [
         { title: "Update Profile", href: `/Setting/Profile${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
@@ -125,25 +134,87 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
 
   // Filter menu items based on the user's role
   const filteredMenuItems = menuItems.filter((item) => {
-    if (userDetails.Role === "Subscribers") {
-      return item.title === "Report Lost Item" ||
-      item.title === "Report Found Item" ||
-      item.title === "My Reports" ||
-      item.title === "Status Checker" ||
-      item.title === "Settings";
-    }
 
     if (userDetails.Role === "Admin") {
-      return item.title === "All Reports" ||
-      item.title === "Approvals" ||
-      item.title === "Resolved Cases" ||
-      item.title === "User Management" ||
-      item.title === "Categories" ||
-      item.title === "Reports Analysis" ||
-      item.title === "Settings";
+      return item.title === "Inventory" ||
+        item.title === "Purchase Orders" ||
+        item.title === "Receiving" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Transfers" ||
+        item.title === "Reorder Alerts" ||
+        item.title === "Reports" ||
+        item.title === "Categories" ||
+        item.title === "Suppliers" ||
+        item.title === "Users & Roles" ||
+        item.title === "Profile";
     }
 
-    // Super Admin can see all items
+    if (userDetails.Role === "Inventory Manager") {
+      return item.title === "Inventory" ||
+        item.title === "Purchase Orders" ||
+        item.title === "Receiving" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Transfers" ||
+        item.title === "Reorder Alerts" ||
+        item.title === "Reports" ||
+        item.title === "Categories" ||
+        item.title === "Suppliers" ||
+        item.title === "Profile";
+    }
+
+    if (userDetails.Role === "Sales Staff") {
+      return item.title === "Inventory" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Reports" ||
+        item.title === "Profile";
+    }
+
+    if (userDetails.Role === "Warehouse Staff") {
+      return item.title === "Inventory" ||
+        item.title === "Receiving" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Transfers" ||
+        item.title === "Reports" ||
+        item.title === "Profile";
+    }
+
+    if (userDetails.Role === "Auditor") { //Read Only Access
+      return item.title === "Inventory" ||
+        item.title === "Purchase Orders" ||
+        item.title === "Receiving" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Transfers" ||
+        item.title === "Reorder Alerts" ||
+        item.title === "Reports" ||
+        item.title === "Categories" ||
+        item.title === "Suppliers" ||
+        item.title === "Users & Roles" ||
+        item.title === "Profile";
+    }
+
+    if (userDetails.Role === "Purchasing Officer") {
+      return item.title === "Inventory" ||
+        item.title === "Purchase Orders" ||
+        item.title === "Transfers" ||
+        item.title === "Reorder Alerts" ||
+        item.title === "Reports" ||
+        item.title === "Suppliers" ||
+        item.title === "Profile";
+    }
+
+    if (userDetails.Role === "Support Staff") {
+      return item.title === "Inventory" ||
+        item.title === "Purchase Orders" ||
+        item.title === "Receiving" ||
+        item.title === "Stock Out / Issuance" ||
+        item.title === "Transfers" ||
+        item.title === "Reorder Alerts" ||
+        item.title === "Reports" ||
+        item.title === "Categories" ||
+        item.title === "Suppliers" ||
+        item.title === "Profile";
+    }
+
     return true;
   });
 
@@ -151,36 +222,35 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     <div className="relative">
       {/* Sidebar Overlay */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 h-screen bg-[#F1F5F9] text-[#334155] border-1  transition-all duration-300 flex flex-col ${
-          collapsed ? "w-16" : "w-64"
-        } ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
-      >
+        className={`fixed inset-y-0 left-0 z-50 h-screen bg-[#F1F5F9] text-[#334155] border-1  transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"
+          } ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+
         {/* Logo Section */}
-        <div className="flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-4 w-full">
           <div className="flex items-center">
-            <img src="/lostfound-logo.png" alt="Logo" className="h-8 mr-2" />
+            <img src="/assetflow.png" alt="Logo" className="w-full h-16" />
             <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}>
-              <h1 className={`text-md font-bold transition-opacity ${collapsed ? "opacity-0" : "opacity-100"}`}>Lost & Found</h1>
+              {/* Link content here */}
             </Link>
           </div>
         </div>
 
         {/* User Details Section */}
         {!collapsed && (
-          <div className="p-8 text-xs text-left border-r-2 shadow-md">
+          <div className="p-6 pt-0 text-xs text-left">
             <p className="font-bold uppercase">
-            {userDetails.Lastname}, {userDetails.Firstname}
+              {userDetails.Lastname}, {userDetails.Firstname}
             </p>
             <p className="text-gray-600">( {userDetails.Role} )</p>
           </div>
         )}
 
         {/* Menu Section */}
-        <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2 border-r-2 shadow-md">
-        <div className="w-full">
+        <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
+          <div className="w-full">
             {userDetails.Role !== "Subscribers" && (
-              <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-[#10B981] rounded hover: rounded-md hover:text-white transition-all">
-                <HiHome size={15} className="mr-1" />Dashboard
+              <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-green-700 rounded hover: rounded-md hover:text-white transition-all">
+                <FaTachometerAlt size={15} className="mr-1" />Dashboard
               </Link>
             )}
           </div>
@@ -188,20 +258,19 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
             <div key={index} className="w-full">
               <button
                 onClick={() => handleToggle(item.title)}
-                className={`flex items-center w-full p-4 rounded-md transition-all hover:bg-[#2563EB] hover:text-white ${collapsed ? "justify-center" : ""}`}
+                className={`flex items-center w-full p-4 rounded-md transition-all hover:bg-green-700 hover:text-white ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon size={15} />
                 {!collapsed && <span className="ml-2">{item.title}</span>}
                 {!collapsed && (
                   <span className="ml-auto">
-                    {openSections[item.title] ? <RxCaretDown size={15} /> : <RxCaretLeft size={15} />}
+                    {openSections[item.title] ? <FaChevronDown size={10} /> : <FaChevronLeft size={10} />}
                   </span>
                 )}
               </button>
               <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                }`}
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${openSections[item.title] ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  }`}
               >
                 {openSections[item.title] && !collapsed && (
                   <div> {/* Added margin-left for submenu spacing */}
@@ -210,7 +279,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
                         key={subIndex}
                         href={subItem.href}
                         prefetch={true}
-                        className="flex items-center w-full p-4 hover:rounded-md hover:bg-[#2563EB] hover:text-white transition-all"
+                        className="flex items-center w-full p-4 hover:rounded-md hover:bg-green-700 hover:text-white transition-all"
                       >
                         {/* Adding small circle icon for each submenu item */}
                         <FaRegCircle size={10} className="mr-2 ml-2" />

@@ -17,10 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lost and Found Software",
+  title: "AxxetFlow | Inventory Management System",
   description: "Created in NextJs Developed By PH Dev-Tech Solutions",
   icons: {
-    icon: "/lostfound-logo.png", // Favicon for the tab bar
+    icon: "/assetflow-logo.png", // Favicon for the tab bar
   },
 };
 
@@ -33,7 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Favicon for the browser tab */}
-        <link rel="icon" href="/lostfound.png" type="image/png" className="rounded-full" />
+        <link rel="icon" href="/assetflow-logo.png" type="image/png" className="rounded-full" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
