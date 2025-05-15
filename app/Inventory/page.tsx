@@ -129,7 +129,7 @@ const ReportItem: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/Report/ReportItems/DeleteRecord`, {
+            const response = await fetch(`/api/Inventory/DeleteData`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

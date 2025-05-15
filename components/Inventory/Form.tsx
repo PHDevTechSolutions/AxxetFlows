@@ -22,20 +22,44 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
   const [ProductSellingPrice, setProductSellingPrice] = useState(editData?.ProductSellingPrice || "");
   const [ProductStatus, setProductStatus] = useState(editData?.ProductStatus || "");
   const [ProductImage, setProductImage] = useState<File | null>(null);
+  
 
+  // Update and Create Data
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editData ? `/api/Inventory/EditData` : `/api/Inventory/CreateData`;
-    const method = editData ? "PUT" : "POST";
+    const isEdit = !!editData;
+    const url = isEdit ? `/api/Inventory/EditData` : `/api/Inventory/CreateData`;
+    const method = isEdit ? "PUT" : "POST";
 
     let body: BodyInit;
     let headers: HeadersInit = {};
 
-    if (editData) {
-      // JSON body for updating (no image involved)
+    // Check if ProductImage is a new File object (not a string URL)
+    const isNewImage = ProductImage && typeof ProductImage !== "string";
+
+    if (isEdit && isNewImage) {
+      // Editing and new image file selected — use FormData
+      const formData = new FormData();
+      formData.append("id", editData._id);
+      formData.append("ReferenceNumber", String(ReferenceNumber));
+      formData.append("ProductName", String(ProductName));
+      formData.append("ProductSKU", String(ProductSKU));
+      formData.append("ProductDescription", String(ProductDescription));
+      formData.append("ProductCategories", String(ProductCategories));
+      formData.append("ProductQuantity", String(ProductQuantity));
+      formData.append("ProductCostPrice", String(ProductCostPrice));
+      formData.append("ProductSellingPrice", String(ProductSellingPrice));
+      formData.append("ProductStatus", String(ProductStatus));
+      formData.append("ProductImage", ProductImage); // file input
+
+      body = formData;
+      // DO NOT set Content-Type, browser will set multipart/form-data boundary
+    } else if (isEdit) {
+      // Editing but no new image — send JSON
       headers["Content-Type"] = "application/json";
       body = JSON.stringify({
+        id: editData._id,
         ReferenceNumber,
         ProductName,
         ProductSKU,
@@ -45,10 +69,10 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
         ProductCostPrice,
         ProductSellingPrice,
         ProductStatus,
-        id: editData._id,
+        ProductImage: ProductImage || "", // existing image URL or empty
       });
     } else {
-      // FormData for creating (with optional image)
+      // Creating new product — use FormData (with image if available)
       const formData = new FormData();
       formData.append("ReferenceNumber", String(ReferenceNumber));
       formData.append("ProductName", String(ProductName));
@@ -65,30 +89,33 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
       }
 
       body = formData;
-      // No need to set Content-Type for FormData (browser will set it with correct boundary)
     }
 
-    const response = await fetch(url, {
-      method,
-      headers,
-      body,
-    });
+    try {
+      const response = await fetch(url, {
+        method,
+        headers,
+        body,
+      });
 
-    if (response.ok) {
-      toast.success(editData ? "Product Updated Successfully" : "Product Added Successfully", {
-        autoClose: 1000,
-        onClose: () => {
-          onCancel();
-          refreshPosts();
-        },
-      });
-    } else {
-      toast.error(editData ? "Failed to Update Product" : "Failed to Add Product", {
-        autoClose: 1000,
-      });
+      if (response.ok) {
+        toast.success(isEdit ? "Product Updated Successfully" : "Product Added Successfully", {
+          autoClose: 1000,
+          onClose: () => {
+            onCancel();
+            refreshPosts();
+          },
+        });
+      } else {
+        toast.error(isEdit ? "Failed to Update Product" : "Failed to Add Product", {
+          autoClose: 1000,
+        });
+      }
+    } catch (error) {
+      toast.error("Network error or server problem", { autoClose: 1000 });
+      console.error("Fetch error:", error);
     }
   };
-
 
   return (
     <>

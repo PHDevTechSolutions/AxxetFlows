@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { FaTimesCircle } from "react-icons/fa";
 
 interface FormFieldsProps {
     ReferenceNumber: string; setReferenceNumber: (value: string) => void;
@@ -61,11 +62,23 @@ const FormFields: React.FC<FormFieldsProps> = ({
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            if (!file.type.startsWith("image/")) {
+                alert("Please select a valid image file.");
+                return;
+            }
             setProductImage(file);
             const objectUrl = URL.createObjectURL(file);
             setImagePreview(objectUrl);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
 
     return (
         <div className="flex flex-wrap -mx-4">
@@ -121,9 +134,20 @@ const FormFields: React.FC<FormFieldsProps> = ({
             <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Product Image</label>
                 <input type="file" onChange={handleImageChange} className="w-full px-3 py-2 border rounded text-xs" />
+
                 {imagePreview && (
-                    <div className="mt-2">
+                    <div className="mt-2 flex items-center space-x-2">
                         <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded" />
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setImagePreview(null);
+                                setProductImage(null);
+                            }}
+                            className="px-2 py-1 text-xs border rounded-full hover:bg-red-600"
+                        >
+                            <FaTimesCircle />
+                        </button>
                     </div>
                 )}
             </div>
