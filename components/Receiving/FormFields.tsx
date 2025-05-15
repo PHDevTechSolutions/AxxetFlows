@@ -205,7 +205,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
             {/* Expiration Date (If Applicable) */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Expiration Date (If Applicable)</label>
-                <input type="date" value={ExpirationDate} onChange={(e) => setExpirationDate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                <input type="date" value={ExpirationDate} onChange={(e) => setExpirationDate(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
             </div>
 
             {/* Remarks */}

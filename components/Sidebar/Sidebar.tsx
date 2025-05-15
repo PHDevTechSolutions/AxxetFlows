@@ -85,7 +85,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Stock Out / Issuance",
       icon: FaArrowCircleDown,
       subItems: [
-        { title: "Sales and Stocks Records", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Sales and Stocks Records", href: `/StockOut/StockoutIssuance${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {

@@ -6,8 +6,8 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/UserFetcher/UserFetcher";
 
 // Pages
-import AddAccountForm from "../../../components/Receiving/Form";
-import Table from "../../../components/Receiving/Table";
+import AddAccountForm from "../../../components/StockOut/Form";
+import Table from "../../../components/StockOut/Table";
 import SearchFilters from "../../../components/Supplier/SearchFilters";
 
 // Toasts
@@ -42,7 +42,7 @@ const ReportItem: React.FC = () => {
     // Fetch Data from the API
     const fetchDatabase = async () => {
         try {
-            const response = await fetch("/api/Received/FetchData");
+            const response = await fetch("/api/StockOut/FetchData");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -94,9 +94,9 @@ const ReportItem: React.FC = () => {
     // Filtered Data
     const filteredAccounts = posts.filter((post) => {
         const inSearchTerm =
-            post.SupplierName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.BuyerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.PONumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.IssuedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.ProductSKU.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.ReferenceDocumentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.ReferenceNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
         const createAt = new Date(post.createAt).getTime();
@@ -107,9 +107,7 @@ const ReportItem: React.FC = () => {
             (!rangeStart || createAt >= rangeStart) &&
             (!rangeEnd || createAt <= rangeEnd);
 
-        const isAvailable = post.ReceivedStatus.toLowerCase() === "approved" || post.ReceivedStatus.toLowerCase() === "posted";
-
-        return inSearchTerm && inDateRange && isAvailable;
+        return inSearchTerm && inDateRange;
     });
 
     // Pagination logic
@@ -134,7 +132,7 @@ const ReportItem: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/Received/DeleteData`, {
+            const response = await fetch(`/api/StockOut/DeleteData`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -176,7 +174,12 @@ const ReportItem: React.FC = () => {
                                     />
                                 ) : (
                                     <>
-                                        <h2 className="text-lg font-bold mb-2">Approved Items</h2>
+                                        <div className="flex justify-between items-center mb-4">
+                                            <button className="bg-blue-600 hover:bg-blue-800 text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
+                                                <FaPlusCircle size={15} />Add Record
+                                            </button>
+                                        </div>
+                                        <h2 className="text-lg font-bold mb-2">Stock-Out / Issuance</h2>
                                         <p className="text-sm text-gray-600 mb-4">
                                             This section displays a comprehensive list of all products available in the inventory. Users can easily browse through detailed information for each product, including names, descriptions, categories, quantities, pricing, and status. The organized layout helps with efficient inventory management, allowing quick access to product data for restocking, sales, and reporting. Keeping an updated and transparent product list supports smooth operations and informed decision-making.
                                         </p>
