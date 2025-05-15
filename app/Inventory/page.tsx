@@ -172,7 +172,7 @@ const ReportItem: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
-                                            <button className="bg-[#2563EB] text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
+                                            <button className="bg-blue-600 hover:bg-blue-800 text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
                                                 <FaPlusCircle size={15} />Add Products
                                             </button>
                                         </div>
