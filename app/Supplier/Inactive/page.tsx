@@ -6,9 +6,9 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/UserFetcher/UserFetcher";
 
 // Pages
-import AddAccountForm from "../../../components/Inventory/Form";
-import Table from "../../../components/Inventory/Table";
-import SearchFilters from "../../../components/Inventory/SearchFilters";
+import AddAccountForm from "../../../components/Supplier/Form";
+import Table from "../../../components/Supplier/Table";
+import SearchFilters from "../../../components/Supplier/SearchFilters";
 
 // Toasts
 import { ToastContainer, toast } from "react-toastify";
@@ -42,7 +42,7 @@ const ReportItem: React.FC = () => {
     // Fetch Data from the API
     const fetchDatabase = async () => {
         try {
-            const response = await fetch("/api/Inventory/FetchData");
+            const response = await fetch("/api/Supplier/FetchData");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -94,7 +94,7 @@ const ReportItem: React.FC = () => {
     // Filtered Data
     const filteredAccounts = posts.filter((post) => {
         const inSearchTerm =
-            post.ProductName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.SupplierName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.ReferenceNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
         const createAt = new Date(post.createAt).getTime();
@@ -105,7 +105,7 @@ const ReportItem: React.FC = () => {
             (!rangeStart || createAt >= rangeStart) &&
             (!rangeEnd || createAt <= rangeEnd);
 
-        const isAvailable = post.ProductStatus.toLowerCase() === "no-stock";
+        const isAvailable = post.Status.toLowerCase() === "inactive";
 
         return inSearchTerm && inDateRange && isAvailable;
     });
@@ -132,7 +132,7 @@ const ReportItem: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/Inventory/DeleteData`, {
+            const response = await fetch(`/api/Supplier/DeleteData`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -174,7 +174,7 @@ const ReportItem: React.FC = () => {
                                     />
                                 ) : (
                                     <>
-                                        <h2 className="text-lg font-bold mb-2">List of No-Stock Products</h2>
+                                        <h2 className="text-lg font-bold mb-2">List of Inactive Suppliers</h2>
                                         <p className="text-sm text-gray-600 mb-4">
                                             This section displays a comprehensive list of all products available in the inventory. Users can easily browse through detailed information for each product, including names, descriptions, categories, quantities, pricing, and status. The organized layout helps with efficient inventory management, allowing quick access to product data for restocking, sales, and reporting. Keeping an updated and transparent product list supports smooth operations and informed decision-making.
                                         </p>
@@ -190,8 +190,6 @@ const ReportItem: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
-                                                Role={user ? user.Role : ""}
-                                                Location={user ? user.Location : ""}
                                             />
 
                                             <div className="text-xs mt-2">

@@ -8,7 +8,7 @@ import UserFetcher from "../../../components/UserFetcher/UserFetcher";
 // Pages
 import AddAccountForm from "../../../components/Inventory/Form";
 import Table from "../../../components/Inventory/Table";
-import SearchFilters from "../../../components/Report/ReportItems/SearchFilters";
+import SearchFilters from "../../../components/Inventory/SearchFilters";
 
 // Toasts
 import { ToastContainer, toast } from "react-toastify";

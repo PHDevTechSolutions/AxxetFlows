@@ -66,7 +66,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Purchase Orders",
       icon: FaShoppingCart,
       subItems: [
-        { title: "Track Purchase Orders", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Track Purchase Orders", href: `/Purchase/PurchaseOrder${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
@@ -115,7 +115,9 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Suppliers",
       icon: FaTruckLoading,
       subItems: [
-        { title: "List of Suppliers", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "List of Suppliers", href: `/Supplier/ListofSupplier${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Inactive", href: `/Supplier/Inactive${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Blacklisted", href: `/Supplier/Blacklisted${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
@@ -231,7 +233,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
         <div className="flex items-center justify-between p-4 w-full">
           <div className="flex items-center">
             <img src="/assetflow.png" alt="Logo" className="w-full h-16" />
-            <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}>
+            <Link href={`/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}>
               {/* Link content here */}
             </Link>
           </div>
