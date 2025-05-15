@@ -19,6 +19,7 @@ interface FormFieldsProps {
     DeliveryAddress: string; setDeliveryAddress: (value: string) => void;
     DeliveryDate: string; setDeliveryDate: (value: string) => void;
     DeliveryStatus: string; setDeliveryStatus: (value: string) => void;
+    DeliveryRemarks: string; setDeliveryRemarks: (value: string) => void;
     editData?: any;
 }
 
@@ -35,6 +36,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
     DeliveryAddress, setDeliveryAddress,
     DeliveryDate, setDeliveryDate,
     DeliveryStatus, setDeliveryStatus,
+    DeliveryRemarks, setDeliveryRemarks,
     editData,
 }) => {
 
@@ -56,6 +58,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
             setDeliveryAddress(editData.DeliveryAddress || "");
             setDeliveryDate(editData.DeliveryDate || "");
             setDeliveryStatus(editData.DeliveryStatus || "");
+            setDeliveryRemarks(editData.DeliveryRemarks || "");
         } else {
             setReferenceNumber(generateReferenceNumber());
         }
@@ -111,7 +114,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
 
             {/* PO Number */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2">PO Number</label>
+                <label className="block text-xs font-bold mb-2">Purchase Order Number</label>
                 <input type="text" value={PONumber} onChange={(e) => setPONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
             </div>
 
@@ -131,7 +134,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Supplier Name</label>
                 {editData ? (
-                    <input type="text" id="CompanyName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name"/>
+                    <input type="text" id="CompanyName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
                 ) : (
                     <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs" placeholder="Select Company" isClearable />
                 )}
@@ -192,9 +195,22 @@ const FormFields: React.FC<FormFieldsProps> = ({
                     <option value="Partially Delivered">Partially Delivered</option>
                     <option value="Failed Delivery">Failed Delivery</option>
                     <option value="Returned">Returned</option>
-                    <option value="Returned">Returned</option>
                 </select>
             </div>
+
+            {/* Delivery Remarks */}
+            {(DeliveryStatus === "Failed Delivery" || DeliveryStatus === "Returned") && (
+                <div className="w-full sm:w-1/2 px-4 mb-4">
+                    <label className="block text-xs font-bold mb-2">Reason / Remarks</label>
+                    <textarea
+                        value={DeliveryRemarks}
+                        onChange={(e) => setDeliveryRemarks(e.target.value)}
+                        className="w-full px-3 py-2 border rounded text-xs capitalize"
+                        rows={3}
+                    ></textarea>
+                </div>
+            )}
+
         </div>
     );
 };

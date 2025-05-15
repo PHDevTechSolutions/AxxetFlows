@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from '../../../../lib/mongodb';
+import { connectToDatabase } from '../../../lib/mongodb';
 
 export default async function Fetch(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -10,7 +10,7 @@ export default async function Fetch(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const db = await connectToDatabase();
-    const DataCollection = db.collection('ReportItem');
+    const DataCollection = db.collection('ReceivedItems');
     const data = await DataCollection.find({}).toArray();
     res.status(200).json(data);
   } catch (error) {

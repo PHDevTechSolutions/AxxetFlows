@@ -12,38 +12,44 @@ export default async function Edit(req: NextApiRequest, res: NextApiResponse) {
     const { 
       id, 
       ReferenceNumber, 
+      DateReceived, 
       PONumber, 
-      PODate, 
-      BuyerName, 
+      ReceivedBy, 
       SupplierName, 
-      ItemName, 
-      Quantity, 
-      UnitPrice, 
-      PaymentTerms,
-      DeliveryAddress, 
-      DeliveryDate, 
-      DeliveryStatus,
-      DeliveryRemarks
+      WarehouseLocation, 
+      ProductSKU, 
+      ProductName, 
+      ProductDescription,
+      ProductQuantity, 
+      ProductBoxes, 
+      ProductMeasure,
+      BatchNumber,
+      ExpirationDate,
+      Remarks,
+      ReceivedStatus
     } = req.body;
 
     try {
         const db = await connectToDatabase();
-        const DataCollection = db.collection('PurchaseOrder');
+        const DataCollection = db.collection('ReceivedItems');
 
         const UpdateData = {
             ReferenceNumber, 
+            DateReceived, 
             PONumber, 
-            PODate, 
-            BuyerName, 
+            ReceivedBy, 
             SupplierName, 
-            ItemName, 
-            Quantity, 
-            UnitPrice, 
-            PaymentTerms, 
-            DeliveryAddress, 
-            DeliveryDate, 
-            DeliveryStatus, 
-            DeliveryRemarks,
+            WarehouseLocation, 
+            ProductSKU, 
+            ProductName, 
+            ProductDescription, 
+            ProductQuantity, 
+            ProductBoxes, 
+            ProductMeasure, 
+            BatchNumber,
+            ExpirationDate,
+            Remarks,
+            ReceivedStatus,
             updatedAt: new Date(),
         };
 

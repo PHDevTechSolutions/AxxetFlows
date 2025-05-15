@@ -18,6 +18,7 @@ interface Post {
   DeliveryAddress: string;
   DeliveryDate: string;
   DeliveryStatus: string;
+  DeliveryRemarks: string;
   createdAt: string;
 }
 
@@ -172,46 +173,61 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
             <tr>
               {[
                 "#", "PO Number", "PO Date", "Buyer Name", "Supplier Name", "Name of Item",
-                "Quantity", "Unit Price", "Total Amount", "Payment terms", "Delivery Address", "Delivery Date", "Status", "Actions"
+                "Quantity", "Unit Price", "Total Amount", "Payment terms", "Delivery Address", "Delivery Date", "Status"
               ].map((header) => (
                 <th key={header} className="px-3 py-6 text-left whitespace-nowrap">{header}</th>
               ))}
+              {/* Conditional header for Delivery Remarks */}
+              {(paginatedPosts.some(post => post.DeliveryStatus === "Failed Delivery" || post.DeliveryStatus === "Returned")) && (
+                <th className="px-3 py-6 text-left whitespace-nowrap">Delivery Remarks</th>
+              )}
+              <th className="px-3 py-6 text-left whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="whitespace-nowrap">
-            {paginatedPosts.map((post) => (
-              <tr key={post._id} className="text-left border-b cursor-pointer hover:bg-gray-50">
-                <td className="px-3 py-6">{post.ReferenceNumber}</td>
-                <td className="px-3 py-6 uppercase">{post.PONumber}</td>
-                <td className="px-3 py-6">{post.PODate}</td>
-                <td className="px-3 py-6 capitalize">{post.BuyerName}</td>
-                <td className="px-3 py-6 capitalize">{post.SupplierName}</td>
-                <td className="px-3 py-6 capitalize">{post.ItemName}</td>
-                <td className="px-3 py-6">{post.Quantity}</td>
-                <td className="px-3 py-6">{parseFloat(post.UnitPrice).toFixed(2)}</td>
-                <td className="px-3 py-6">{computeTotalAmount(post.Quantity, post.UnitPrice)}</td>
-                <td className="px-3 py-6">{post.PaymentTerms}</td>
-                <td className="px-3 py-6 capitalize">{post.DeliveryAddress}</td>
-                <td className="px-3 py-6">{post.DeliveryDate}</td>
-                <td className="px-3 py-6">
-                  <span className={`px-2 py-1 rounded-full text-[10px] font-semibold ${getStatusBadgeColor(post.DeliveryStatus)}`}>
-                    {post.DeliveryStatus}
-                  </span>
-                </td>
-                <td className="px-3 py-6" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex space-x-2">
-                    <button onClick={() => handleEdit(post)} className="text-xs py-2 px-4 rounded bg-blue-600 hover:bg-blue-800 text-white flex items-center">
-                      <FaEdit size={15} className="mr-1" /> Edit
-                    </button>
-                    <button onClick={() => handleDelete(post._id)} className="text-xs py-2 px-4 rounded bg-red-600 hover:bg-red-800 text-white flex items-center">
-                      <FaTrash size={15} className="mr-1" /> Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {paginatedPosts.map((post) => {
+              const showRemarks = post.DeliveryStatus === "Failed Delivery" || post.DeliveryStatus === "Returned";
+              return (
+                <tr key={post._id} className="text-left border-b cursor-pointer hover:bg-gray-50">
+                  <td className="px-3 py-6">{post.ReferenceNumber}</td>
+                  <td className="px-3 py-6 uppercase">{post.PONumber}</td>
+                  <td className="px-3 py-6">{post.PODate}</td>
+                  <td className="px-3 py-6 capitalize">{post.BuyerName}</td>
+                  <td className="px-3 py-6 capitalize">{post.SupplierName}</td>
+                  <td className="px-3 py-6 capitalize">{post.ItemName}</td>
+                  <td className="px-3 py-6">{post.Quantity}</td>
+                  <td className="px-3 py-6">{parseFloat(post.UnitPrice).toFixed(2)}</td>
+                  <td className="px-3 py-6">{computeTotalAmount(post.Quantity, post.UnitPrice)}</td>
+                  <td className="px-3 py-6">{post.PaymentTerms}</td>
+                  <td className="px-3 py-6 capitalize">{post.DeliveryAddress}</td>
+                  <td className="px-3 py-6">{post.DeliveryDate}</td>
+                  <td className="px-3 py-6">
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-semibold ${getStatusBadgeColor(post.DeliveryStatus)}`}>
+                      {post.DeliveryStatus}
+                    </span>
+                  </td>
+
+                  {/* Conditional Delivery Remarks cell */}
+                  {showRemarks && (
+                    <td className="px-3 py-6 capitalize">{post.DeliveryRemarks || '-'}</td>
+                  )}
+
+                  <td className="px-3 py-6" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex space-x-2">
+                      <button onClick={() => handleEdit(post)} className="text-xs py-2 px-4 rounded bg-blue-600 hover:bg-blue-800 text-white flex items-center">
+                        <FaEdit size={15} className="mr-1" /> Edit
+                      </button>
+                      <button onClick={() => handleDelete(post._id)} className="text-xs py-2 px-4 rounded bg-red-600 hover:bg-red-800 text-white flex items-center">
+                        <FaTrash size={15} className="mr-1" /> Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+
       </div>
 
       {/* Pagination */}

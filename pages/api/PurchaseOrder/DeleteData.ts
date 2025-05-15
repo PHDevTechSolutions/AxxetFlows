@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from '../../../../lib/mongodb';
+import { connectToDatabase } from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
 
 export default async function Delete(req: NextApiRequest, res: NextApiResponse) {
@@ -13,7 +13,7 @@ export default async function Delete(req: NextApiRequest, res: NextApiResponse) 
 
     try {
         const db = await connectToDatabase();
-        const DataCollection = db.collection('ReportItem');
+        const DataCollection = db.collection('PurchaseOrder');
 
         await DataCollection.deleteOne({ _id: new ObjectId(id) });
         res.status(200).json({ success: true, message: 'Report Item Deleted Successfully' });

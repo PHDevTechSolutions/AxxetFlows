@@ -67,13 +67,18 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       icon: FaShoppingCart,
       subItems: [
         { title: "Track Purchase Orders", href: `/Purchase/PurchaseOrder${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Delivered Orders", href: `/Purchase/DeliveredOrder${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Return Orders", href: `/Purchase/ReturnOrder${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Failed Orders", href: `/Purchase/FailedOrder${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
       title: "Receiving",
       icon: FaTruck,
       subItems: [
-        { title: "Logs and Goods", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Pending Inspection", href: `/Receiving/PendingInspection${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Approved Items", href: `/Receiving/ApproveItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Rejected", href: `/Receiving/RejectedItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {

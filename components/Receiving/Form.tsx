@@ -13,24 +13,27 @@ interface FormProps {
 
 const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
   const [ReferenceNumber, setReferenceNumber] = useState(editData?.ReferenceNumber || "");
+  const [DateReceived, setDateReceived] = useState(editData?.DateReceived || "");
   const [PONumber, setPONumber] = useState(editData?.PONumber || "");
-  const [PODate, setPODate] = useState(editData?.PODate || "");
-  const [BuyerName, setBuyerName] = useState(editData?.BuyerName || "");
+  const [ReceivedBy, setReceivedBy] = useState(editData?.ReceivedBy || "");
   const [SupplierName, setSupplierName] = useState(editData?.SupplierName || "");
-  const [ItemName, setItemName] = useState(editData?.ItemName || "");
-  const [Quantity, setQuantity] = useState(editData?.Quantity || "");
-  const [UnitPrice, setUnitPrice] = useState(editData?.UnitPrice || "");
-  const [PaymentTerms, setPaymentTerms] = useState(editData?.PaymentTerms || "");
-  const [DeliveryAddress, setDeliveryAddress] = useState(editData?.DeliveryAddress || "");
-  const [DeliveryDate, setDeliveryDate] = useState(editData?.DeliveryDate || "");
-  const [DeliveryStatus, setDeliveryStatus] = useState(editData?.DeliveryStatus || "");
-  const [DeliveryRemarks, setDeliveryRemarks] = useState(editData?.DeliveryRemarks || "");
+  const [WarehouseLocation, setWarehouseLocation] = useState(editData?.WarehouseLocation || "");
+  const [ProductSKU, setProductSKU] = useState(editData?.ProductSKU || "");
+  const [ProductName, setProductName] = useState(editData?.ProductName || "");
+  const [ProductDescription, setProductDescription] = useState(editData?.ProductDescription || "");
+  const [ProductQuantity, setProductQuantity] = useState(editData?.ProductQuantity || "");
+  const [ProductBoxes, setProductBoxes] = useState(editData?.ProductBoxes || "");
+  const [ProductMeasure, setProductMeasure] = useState(editData?.ProductMeasure || "");
+  const [BatchNumber, setBatchNumber] = useState(editData?.BatchNumber || "");
+  const [ExpirationDate, setExpirationDate] = useState(editData?.ExpirationDate || "");
+  const [Remarks, setRemarks] = useState(editData?.Remarks || "");
+  const [ReceivedStatus, setReceivedStatus] = useState(editData?.ReceivedStatus || "");
 
   // Update and Create Data
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = editData ? `/api/PurchaseOrder/EditData` : `/api/PurchaseOrder/CreateData`;
+    const url = editData ? `/api/Received/EditData` : `/api/Received/CreateData`;
     const method = editData ? "PUT" : "POST";
 
     const response = await fetch(url, {
@@ -39,8 +42,8 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceNumber, PONumber, PODate, BuyerName, SupplierName, ItemName, Quantity, UnitPrice, PaymentTerms, DeliveryAddress,
-        DeliveryDate, DeliveryStatus, DeliveryRemarks, id: editData?._id,
+        ReferenceNumber, DateReceived, PONumber, ReceivedBy, SupplierName, WarehouseLocation, ProductSKU, ProductName, ProductDescription,
+        ProductQuantity, ProductBoxes, ProductMeasure, BatchNumber, ExpirationDate, Remarks, ReceivedStatus, id: editData?._id,
       }),
     });
 
@@ -65,18 +68,21 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
         <h2 className="text-xs font-bold mb-4">{editData ? "Update Information" : "Information"}</h2>
         <FormFields
           ReferenceNumber={ReferenceNumber} setReferenceNumber={setReferenceNumber}
+          DateReceived={DateReceived} setDateReceived={setDateReceived}
           PONumber={PONumber} setPONumber={setPONumber}
-          PODate={PODate} setPODate={setPODate}
-          BuyerName={BuyerName} setBuyerName={setBuyerName}
+          ReceivedBy={ReceivedBy} setReceivedBy={setReceivedBy}
           SupplierName={SupplierName} setSupplierName={setSupplierName}
-          ItemName={ItemName} setItemName={setItemName}
-          Quantity={Quantity} setQuantity={setQuantity}
-          UnitPrice={UnitPrice} setUnitPrice={setUnitPrice}
-          PaymentTerms={PaymentTerms} setPaymentTerms={setPaymentTerms}
-          DeliveryAddress={DeliveryAddress} setDeliveryAddress={setDeliveryAddress}
-          DeliveryDate={DeliveryDate} setDeliveryDate={setDeliveryDate}
-          DeliveryStatus={DeliveryStatus} setDeliveryStatus={setDeliveryStatus}
-          DeliveryRemarks={DeliveryRemarks} setDeliveryRemarks={setDeliveryRemarks}
+          WarehouseLocation={WarehouseLocation} setWarehouseLocation={setWarehouseLocation}
+          ProductSKU={ProductSKU} setProductSKU={setProductSKU}
+          ProductName={ProductName} setProductName={setProductName}
+          ProductDescription={ProductDescription} setProductDescription={setProductDescription}
+          ProductQuantity={ProductQuantity} setProductQuantity={setProductQuantity}
+          ProductBoxes={ProductBoxes} setProductBoxes={setProductBoxes}
+          ProductMeasure={ProductMeasure} setProductMeasure={setProductMeasure}
+          BatchNumber={BatchNumber} setBatchNumber={setBatchNumber}
+          ExpirationDate={ExpirationDate} setExpirationDate={setExpirationDate}
+          Remarks={Remarks} setRemarks={setRemarks}
+          ReceivedStatus={ReceivedStatus} setReceivedStatus={setReceivedStatus}
           editData={editData}
         />
         <div className="flex justify-between">
