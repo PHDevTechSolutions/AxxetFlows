@@ -23,51 +23,55 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
   const [ProductStatus, setProductStatus] = useState(editData?.ProductStatus || "");
   const [ProductImage, setProductImage] = useState<File | null>(null);
 
-  useEffect(() => {
-    if (editData) {
-      // If editData exists, pre-fill fields with the existing data
-      setReferenceNumber(editData.ReferenceNumber);
-      setProductName(editData.ProductName);
-      setProductSKU(editData.ProductSKU);
-      setProductDescription(editData.ProductDescription);
-      setProductCategories(editData.ProductCategories);
-      setProductQuantity(editData.ProductQuantity);
-      setProductCostPrice(editData.ProductCostPrice);
-      setProductSellingPrice(editData.ProductSellingPrice);
-      setProductStatus(editData.ProductStatus);
-    }
-  }, [editData]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const formData = new FormData();
-
-    // Ensure that each value is a string
-    formData.append("ReferenceNumber", String(ReferenceNumber));
-    formData.append("ProductName", String(ProductName));
-    formData.append("ProductSKU", String(ProductSKU));
-    formData.append("ProductDescription", String(ProductDescription));
-    formData.append("ProductCategories", String(ProductCategories));
-    formData.append("ProductQuantity", String(ProductQuantity));
-    formData.append("ProductCostPrice", String(ProductCostPrice));
-    formData.append("ProductSellingPrice", String(ProductSellingPrice));
-    formData.append("ProductStatus", String(ProductStatus));
-
-    if (ProductImage) {
-      formData.append("ProductImage", ProductImage); // Attach image if present
-    }
-
-    if (editData?._id) {
-      formData.append("id", editData._id);
-    }
 
     const url = editData ? `/api/Inventory/EditData` : `/api/Inventory/CreateData`;
     const method = editData ? "PUT" : "POST";
 
+    let body: BodyInit;
+    let headers: HeadersInit = {};
+
+    if (editData) {
+      // JSON body for updating (no image involved)
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify({
+        ReferenceNumber,
+        ProductName,
+        ProductSKU,
+        ProductDescription,
+        ProductCategories,
+        ProductQuantity,
+        ProductCostPrice,
+        ProductSellingPrice,
+        ProductStatus,
+        id: editData._id,
+      });
+    } else {
+      // FormData for creating (with optional image)
+      const formData = new FormData();
+      formData.append("ReferenceNumber", String(ReferenceNumber));
+      formData.append("ProductName", String(ProductName));
+      formData.append("ProductSKU", String(ProductSKU));
+      formData.append("ProductDescription", String(ProductDescription));
+      formData.append("ProductCategories", String(ProductCategories));
+      formData.append("ProductQuantity", String(ProductQuantity));
+      formData.append("ProductCostPrice", String(ProductCostPrice));
+      formData.append("ProductSellingPrice", String(ProductSellingPrice));
+      formData.append("ProductStatus", String(ProductStatus));
+
+      if (ProductImage) {
+        formData.append("ProductImage", ProductImage);
+      }
+
+      body = formData;
+      // No need to set Content-Type for FormData (browser will set it with correct boundary)
+    }
+
     const response = await fetch(url, {
       method,
-      body: formData,
+      headers,
+      body,
     });
 
     if (response.ok) {
@@ -84,6 +88,7 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
       });
     }
   };
+
 
   return (
     <>
