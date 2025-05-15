@@ -29,6 +29,6 @@
     "**/*.tsx", 
     "global.d.ts",
     "src/**/*.ts",
-    ".next/types/**/*.ts"],
+    ".next/types/**/*.ts", "lib/cloudinary.js"],
   "exclude": ["node_modules"]
 }

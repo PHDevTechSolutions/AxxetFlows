@@ -1,0 +1,145 @@
+import React, { useState, useEffect } from "react";
+
+interface FormFieldsProps {
+    ReferenceNumber: string; setReferenceNumber: (value: string) => void;
+    ProductName: string; setProductName: (value: string) => void;
+    ProductSKU: string; setProductSKU: (value: string) => void;
+    ProductDescription: string; setProductDescription: (value: string) => void;
+    ProductCategories: string; setProductCategories: (value: string) => void;
+    ProductQuantity: string; setProductQuantity: (value: string) => void;
+    ProductCostPrice: string; setProductCostPrice: (value: string) => void;
+    ProductSellingPrice: string; setProductSellingPrice: (value: string) => void;
+    ProductStatus: string; setProductStatus: (value: string) => void;
+    ProductImage: File | null; setProductImage: React.Dispatch<React.SetStateAction<File | null>>;
+    editData?: any;
+}
+
+const FormFields: React.FC<FormFieldsProps> = ({
+    ReferenceNumber, setReferenceNumber,
+    ProductName, setProductName,
+    ProductSKU, setProductSKU,
+    ProductDescription, setProductDescription,
+    ProductCategories, setProductCategories,
+    ProductQuantity, setProductQuantity,
+    ProductCostPrice, setProductCostPrice,
+    ProductSellingPrice, setProductSellingPrice,
+    ProductStatus, setProductStatus,
+    ProductImage, setProductImage,
+    editData,
+}) => {
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    // Generate Reference Number only when not editing
+    useEffect(() => {
+        if (editData) {
+            // Populate form fields for edit
+            setReferenceNumber(editData.ReferenceNumber || "");
+            setProductName(editData.ProductName || "");
+            setProductSKU(editData.ProductSKU || "");
+            setProductDescription(editData.ProductDescription || "");
+            setProductCategories(editData.ProductCategories || "");
+            setProductQuantity(editData.ProductQuantity || "");
+            setProductCostPrice(editData.ProductCostPrice || "");
+            setProductSellingPrice(editData.ProductSellingPrice || "");
+            setProductStatus(editData.ProductStatus || "");
+
+            // Set image preview from existing URL if any
+            if (editData.ProductImage && typeof editData.ProductImage === "string") {
+                setImagePreview(editData.ProductImage);
+            }
+        } else {
+            setReferenceNumber(generateReferenceNumber());
+        }
+    }, [editData]);
+
+    const generateReferenceNumber = () => {
+        const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        return `Product-${randomString}-${randomNumber}`;
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setProductImage(file);
+            const objectUrl = URL.createObjectURL(file);
+            setImagePreview(objectUrl);
+        }
+    };
+
+    return (
+        <div className="flex flex-wrap -mx-4">
+            <input type="hidden" id="ReferenceNumber" value={ReferenceNumber} readOnly className="w-full px-3 py-2 border rounded text-xs" />
+
+            {/* Product Name */}
+            <div className="w-full sm:w-1/2 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Product Name</label>
+                <input type="text" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+            </div>
+
+            {/* SKU */}
+            <div className="w-full sm:w-1/2 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Product SKU</label>
+                <input type="text" value={ProductSKU} onChange={(e) => setProductSKU(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+            </div>
+
+            {/* Description */}
+            <div className="w-full sm:w-1/2 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Description</label>
+                <textarea value={ProductDescription} onChange={(e) => setProductDescription(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={3} />
+            </div>
+
+            {/* Categories */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Categories</label>
+                <select value={ProductCategories} onChange={(e) => setProductCategories(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+                    <option value="">Select Category</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Foods">Foods</option>
+                </select>
+            </div>
+
+            {/* Quantity */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Quantity</label>
+                <input type="number" value={ProductQuantity} onChange={(e) => setProductQuantity(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+            </div>
+
+            {/* Cost Price */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Cost Price</label>
+                <input type="number" value={ProductCostPrice} onChange={(e) => setProductCostPrice(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+            </div>
+
+            {/* Selling Price */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Selling Price</label>
+                <input type="number" value={ProductSellingPrice} onChange={(e) => setProductSellingPrice(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" />
+            </div>
+
+            {/* Image */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Product Image</label>
+                <input type="file" onChange={handleImageChange} className="w-full px-3 py-2 border rounded text-xs" />
+                {imagePreview && (
+                    <div className="mt-2">
+                        <img src={imagePreview} alt="Preview" className="w-24 h-24 object-cover rounded" />
+                    </div>
+                )}
+            </div>
+
+            {/* Status */}
+            <div className="w-full sm:w-1/2 md:w-1/4 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Status</label>
+                <select value={ProductStatus} onChange={(e) => setProductStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+                    <option value="">Select Status</option>
+                    <option value="Available">Available</option>
+                    <option value="No-Stock">No-Stock</option>
+                    <option value="Draft">Draft</option>
+                </select>
+            </div>
+        </div>
+    );
+};
+
+export default FormFields;

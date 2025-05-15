@@ -57,7 +57,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Inventory",
       icon: FaBox,
       subItems: [
-        { title: "View Inventory", href: `/Report/ReportItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "View Inventory", href: `/Inventory${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {

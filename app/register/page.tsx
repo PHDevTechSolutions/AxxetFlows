@@ -2,19 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import { FcGoogle } from "react-icons/fc";
 
 const Register: React.FC = () => {
   const [userName, setuserName] = useState("");
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
+  const [Role, setRole] = useState("");
   const router = useRouter();
-
-  const Role = "Admin"; // Hidden default role
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +58,13 @@ const Register: React.FC = () => {
           <div className="mb-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
             <input type="email" value={Email} onChange={(e) => setEmail(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Email" />
+          </div>
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
+            <select id="Role" value={Role} onChange={(e) => setRole(e.target.value)} className="w-full text-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select Role</option>
+              <option value="Admin">Admin</option>
+            </select>
           </div>
           <div className="mb-4">
             <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>

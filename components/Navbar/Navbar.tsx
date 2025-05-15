@@ -31,13 +31,11 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
 
     const fetchNotifications = async () => {
       try {
-        const [approvedRes, foundRes] = await Promise.all([
-          fetch(`/api/Notification/ReportItems/FetchRecord?email=${encodeURIComponent(userEmail)}`),
-          fetch(`/api/Notification/ReportFound/FetchRecord?email=${encodeURIComponent(userEmail)}`)
+        const [approvedRes] = await Promise.all([
+          fetch(`/api/Notification/ReportItems/FetchRecord?email=${encodeURIComponent(userEmail)}`)
         ]);
 
         const approvedData = await approvedRes.json();
-        const foundData = await foundRes.json();
 
         const approvedNotifications = approvedData.filter(
           (item: any) => item.ItemProgress?.toLowerCase() === "approve"
@@ -46,16 +44,7 @@ const Navbar: React.FC<{ onToggleSidebar: () => void }> = ({ onToggleSidebar }) 
           message: "Your post has been approved and posted into the website."
         }));
 
-        const foundNotifications = foundData.filter(
-          (item: any) =>
-            item.ItemStatus?.toLowerCase() === "found" &&
-            item.Email?.toLowerCase() === userEmail.toLowerCase()
-        ).map((item: any) => ({
-          type: "found",
-          message: "Your lost item has been found."
-        }));
-
-        setNotifications([...approvedNotifications, ...foundNotifications]);
+        setNotifications([...approvedNotifications]);
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
       }

@@ -1,27 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ParentLayout from "../../../components/Layouts/ParentLayout";
-import SessionChecker from "../../../components/Session/SessionChecker";
-import UserFetcher from "../../../components/UserFetcher/UserFetcher";
+import ParentLayout from "../../components/Layouts/ParentLayout";
+import SessionChecker from "../../components/Session/SessionChecker";
+import UserFetcher from "../../components/UserFetcher/UserFetcher";
 
 // Pages
-import AddAccountForm from "../../../components/Report/ReportItems/ReportForm";
-import Table from "../../../components/Report/ReportItems/ReportItemsTable";
-import SearchFilters from "../../../components/Report/ReportItems/SearchFilters";
+import AddAccountForm from "../../components/Inventory/Form";
+import Table from "../../components/Inventory/Table";
+import SearchFilters from "../../components/Report/ReportItems/SearchFilters";
 
 // Toasts
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-import { HiMiniPlus } from "react-icons/hi2";
+import { FaPlusCircle } from "react-icons/fa";
 
 const ReportItem: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
     const [editData, setEditData] = useState<any>(null);
     const [posts, setPosts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedLocation, setSelectedLocation] = useState<string>("");
 
     const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
         start: "",
@@ -43,7 +42,7 @@ const ReportItem: React.FC = () => {
     // Fetch Data from the API
     const fetchDatabase = async () => {
         try {
-            const response = await fetch("/api/Report/ReportItems/FetchRecord");
+            const response = await fetch("/api/Inventory/FetchData");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -93,21 +92,19 @@ const ReportItem: React.FC = () => {
 
     // Filter Data based on search term and city address
     const filteredAccounts = posts.filter((post) => {
-        const isUserEmailMatch = post.Email === userDetails.Email;
-
         const inSearchTerm =
-            post.ItemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.ProductName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.ReferenceNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const DateLost = new Date(post.DateLost).getTime();
+        const createAt = new Date(post.createAt).getTime();
         const rangeStart = dateRange.start ? new Date(dateRange.start).getTime() : null;
         const rangeEnd = dateRange.end ? new Date(dateRange.end).getTime() : null;
 
         const inDateRange =
-            (!rangeStart || DateLost >= rangeStart) &&
-            (!rangeEnd || DateLost <= rangeEnd);
+            (!rangeStart || createAt >= rangeStart) &&
+            (!rangeEnd || createAt <= rangeEnd);
 
-        return isUserEmailMatch && inSearchTerm && inDateRange;
+        return inSearchTerm && inDateRange;
     });
 
     // Pagination logic
@@ -176,10 +173,10 @@ const ReportItem: React.FC = () => {
                                     <>
                                         <div className="flex justify-between items-center mb-4">
                                             <button className="bg-[#2563EB] text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
-                                                <HiMiniPlus size={15} />Add/Report Item
+                                                <FaPlusCircle size={15} />Add Products
                                             </button>
                                         </div>
-                                        <h2 className="text-lg font-bold mb-2">School Lost Items</h2>
+                                        <h2 className="text-lg font-bold mb-2">List of Products</h2>
                                         <p className="text-sm text-gray-600 mb-4">
                                             The "School Lost Items" section serves as a centralized record of all reported lost belongings within the school premises. It enables users to track and review details of lost items, such as descriptions, owners, contact information, and the location where they were lost. This section promotes transparency and accountability by keeping an organized list of reported items, making it easier for the rightful owners to reclaim them. By streamlining the lost-and-found process, the system enhances recovery efforts and supports a responsible campus environment.
                                         </p>
