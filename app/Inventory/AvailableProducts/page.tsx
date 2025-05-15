@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import ParentLayout from "../../components/Layouts/ParentLayout";
-import SessionChecker from "../../components/Session/SessionChecker";
-import UserFetcher from "../../components/UserFetcher/UserFetcher";
+import ParentLayout from "../../../components/Layouts/ParentLayout";
+import SessionChecker from "../../../components/Session/SessionChecker";
+import UserFetcher from "../../../components/UserFetcher/UserFetcher";
 
 // Pages
-import AddAccountForm from "../../components/Inventory/Form";
-import Table from "../../components/Inventory/Table";
-import SearchFilters from "../../components/Report/ReportItems/SearchFilters";
+import AddAccountForm from "../../../components/Inventory/Form";
+import Table from "../../../components/Inventory/Table";
+import SearchFilters from "../../../components/Report/ReportItems/SearchFilters";
 
 // Toasts
 import { ToastContainer, toast } from "react-toastify";
@@ -90,7 +90,8 @@ const ReportItem: React.FC = () => {
         fetchUserData();
     }, []);
 
-    // Filter Data based on search term and city address
+
+    // Filtered Data
     const filteredAccounts = posts.filter((post) => {
         const inSearchTerm =
             post.ProductName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,7 +105,9 @@ const ReportItem: React.FC = () => {
             (!rangeStart || createAt >= rangeStart) &&
             (!rangeEnd || createAt <= rangeEnd);
 
-        return inSearchTerm && inDateRange;
+        const isAvailable = post.ProductStatus.toLowerCase() === "available";
+
+        return inSearchTerm && inDateRange && isAvailable;
     });
 
     // Pagination logic
@@ -139,7 +142,7 @@ const ReportItem: React.FC = () => {
 
             if (response.ok) {
                 setPosts(posts.filter((post) => post._id !== postToDelete));
-                toast.success("Report Item Deleted Successfully.");
+                toast.success("Data Deleted Successfully.");
             } else {
                 toast.error("Failed to delete data.");
             }
@@ -176,7 +179,7 @@ const ReportItem: React.FC = () => {
                                                 <FaPlusCircle size={15} />Add Products
                                             </button>
                                         </div>
-                                        <h2 className="text-lg font-bold mb-2">List of Products</h2>
+                                        <h2 className="text-lg font-bold mb-2">List of Available Products</h2>
                                         <p className="text-sm text-gray-600 mb-4">
                                             This section displays a comprehensive list of all products available in the inventory. Users can easily browse through detailed information for each product, including names, descriptions, categories, quantities, pricing, and status. The organized layout helps with efficient inventory management, allowing quick access to product data for restocking, sales, and reporting. Keeping an updated and transparent product list supports smooth operations and informed decision-making.
                                         </p>
@@ -207,7 +210,7 @@ const ReportItem: React.FC = () => {
                                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                                         <div className="bg-white p-4 rounded shadow-lg">
                                             <h2 className="text-xs font-bold mb-4">Confirm Deletion</h2>
-                                            <p className="text-xs">Are you sure you want to delete this account?</p>
+                                            <p className="text-xs">Are you sure you want to delete this data?</p>
                                             <div className="mt-4 flex justify-end">
                                                 <button className="bg-red-500 text-white text-xs px-4 py-2 rounded mr-2" onClick={handleDelete}>Delete</button>
                                                 <button className="bg-gray-300 text-xs px-4 py-2 rounded" onClick={() => setShowDeleteModal(false)}>Cancel</button>

@@ -54,10 +54,12 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
 
   const menuItems = [
     {
-      title: "Inventory",
+      title: "Products",
       icon: FaBox,
       subItems: [
-        { title: "View Inventory", href: `/Inventory${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Available Products", href: `/Inventory/AvailableProducts${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "No-Stock", href: `/Inventory/NoStockProducts${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Draft", href: `/Inventory/DraftProducts${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
@@ -136,7 +138,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
   const filteredMenuItems = menuItems.filter((item) => {
 
     if (userDetails.Role === "Admin") {
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Purchase Orders" ||
         item.title === "Receiving" ||
         item.title === "Stock Out / Issuance" ||
@@ -150,7 +152,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     }
 
     if (userDetails.Role === "Inventory Manager") {
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Purchase Orders" ||
         item.title === "Receiving" ||
         item.title === "Stock Out / Issuance" ||
@@ -163,14 +165,14 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     }
 
     if (userDetails.Role === "Sales Staff") {
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Stock Out / Issuance" ||
         item.title === "Reports" ||
         item.title === "Profile";
     }
 
     if (userDetails.Role === "Warehouse Staff") {
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Receiving" ||
         item.title === "Stock Out / Issuance" ||
         item.title === "Transfers" ||
@@ -179,7 +181,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     }
 
     if (userDetails.Role === "Auditor") { //Read Only Access
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Purchase Orders" ||
         item.title === "Receiving" ||
         item.title === "Stock Out / Issuance" ||
@@ -193,7 +195,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
     }
 
     if (userDetails.Role === "Purchasing Officer") {
-      return item.title === "Inventory" ||
+      return item.title === "Products" ||
         item.title === "Purchase Orders" ||
         item.title === "Transfers" ||
         item.title === "Reorder Alerts" ||
