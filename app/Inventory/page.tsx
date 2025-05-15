@@ -178,7 +178,7 @@ const ReportItem: React.FC = () => {
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">List of Products</h2>
                                         <p className="text-sm text-gray-600 mb-4">
-                                            The "School Lost Items" section serves as a centralized record of all reported lost belongings within the school premises. It enables users to track and review details of lost items, such as descriptions, owners, contact information, and the location where they were lost. This section promotes transparency and accountability by keeping an organized list of reported items, making it easier for the rightful owners to reclaim them. By streamlining the lost-and-found process, the system enhances recovery efforts and supports a responsible campus environment.
+                                            This section displays a comprehensive list of all products available in the inventory. Users can easily browse through detailed information for each product, including names, descriptions, categories, quantities, pricing, and status. The organized layout helps with efficient inventory management, allowing quick access to product data for restocking, sales, and reporting. Keeping an updated and transparent product list supports smooth operations and informed decision-making.
                                         </p>
 
                                         <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
