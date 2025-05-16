@@ -259,7 +259,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
         <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
           <div className="w-full">
             {userDetails.Role !== "Subscribers" && (
-              <Link href={`/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-green-700 rounded hover: rounded-md hover:text-white transition-all">
+              <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-green-700 rounded hover: rounded-md hover:text-white transition-all">
                 <FaTachometerAlt size={15} className="mr-1" />Dashboard
               </Link>
             )}
