@@ -5,6 +5,32 @@ import ParentLayout from '../../components/Layouts/ParentLayout';
 import SessionChecker from '../../components/Session/SessionChecker';
 import UserFetcher from '../../components/UserFetcher/UserFetcher';
 
+type ReceivedData = {
+  PONumber: string;
+  ProductSKU: string;
+  ProductName: string;
+  ProductQuantity: number;
+  DateReceived: string;
+};
+
+type StockOutData = {
+  ReferenceNumber: string;
+  ProductSKU: string;
+  ProductName: string;
+  ProductQuantity: number;
+  DateIssuance: string;
+};
+
+type TransferData = {
+  ProductName: string;
+  ProductQuantity: number;
+  ProductSKU: string;
+  UnitMeasure: string;
+  DateTransfer: string;
+};
+
+const ITEMS_PER_PAGE = 5;
+
 const DashboardPage: React.FC = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const [lowStockCount, setLowStockCount] = useState(0);
@@ -15,6 +41,18 @@ const DashboardPage: React.FC = () => {
   const [topReorderItems, setTopReorderItems] = useState<
     { ProductSKU: string; ProductName: string; ReorderLevel: number }[]
   >([]);
+
+  // === New states for Latest Transactions Summary ===
+  const [receivedData, setReceivedData] = useState<ReceivedData[]>([]);
+  const [receivedPage, setReceivedPage] = useState(1);
+
+  const [stockOutData, setStockOutData] = useState<StockOutData[]>([]);
+  const [stockOutPage, setStockOutPage] = useState(1);
+
+  const [transferData, setTransferData] = useState<TransferData[]>([]);
+  const [transferPage, setTransferPage] = useState(1);
+
+  const [activeTab, setActiveTab] = useState("received");
 
   // Fetch Count Stocks
   useEffect(() => {
@@ -86,12 +124,88 @@ const DashboardPage: React.FC = () => {
     fetchReorderData();
   }, []);
 
+
   // Maximum height of the chart container in pixels (h-48 = 12rem = 192px)
   const maxHeightPx = 192;
   // Get max count to scale bars proportionally
   const maxCount = Math.max(totalItemsCount, lowStockCount, outOfStockCount, 1);
   // Scale factor: pixels per unit count
   const scaleFactor = maxHeightPx / maxCount;
+
+  // Fetch Received Data
+  useEffect(() => {
+    const fetchReceived = async () => {
+      try {
+        const res = await fetch('/api/Received/FetchData');
+        const data: ReceivedData[] = await res.json();
+        // Sort descending by DateReceived
+        data.sort((a, b) => new Date(b.DateReceived).getTime() - new Date(a.DateReceived).getTime());
+        setReceivedData(data);
+      } catch (err) {
+        console.error('Failed to fetch Received data:', err);
+      }
+    };
+    fetchReceived();
+  }, []);
+
+  // Fetch StockOut Data
+  useEffect(() => {
+    const fetchStockOut = async () => {
+      try {
+        const res = await fetch('/api/StockOut/FetchData');
+        const data: StockOutData[] = await res.json();
+        // Sort descending by DateIssuance
+        data.sort((a, b) => new Date(b.DateIssuance).getTime() - new Date(a.DateIssuance).getTime());
+        setStockOutData(data);
+      } catch (err) {
+        console.error('Failed to fetch StockOut data:', err);
+      }
+    };
+    fetchStockOut();
+  }, []);
+
+  // Fetch Transfer Data
+  useEffect(() => {
+    const fetchTransfer = async () => {
+      try {
+        const res = await fetch('/api/Transfer/FetchData');
+        const data: TransferData[] = await res.json();
+        // Sort descending by DateTransfer
+        data.sort((a, b) => new Date(b.DateTransfer).getTime() - new Date(a.DateTransfer).getTime());
+        setTransferData(data);
+      } catch (err) {
+        console.error('Failed to fetch Transfer data:', err);
+      }
+    };
+    fetchTransfer();
+  }, []);
+
+  // Pagination helpers
+  const paginate = <T,>(data: T[], page: number): T[] => {
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return data.slice(start, start + ITEMS_PER_PAGE);
+  };
+
+  // Pagination controls
+  const renderPagination = (currentPage: number, totalItems: number, onPageChange: (page: number) => void) => {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`px-2 py-1 rounded border mx-1 text-sm ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-100'
+            }`}
+          onClick={() => onPageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+    return <div className="mt-2 flex justify-center">{pages}</div>;
+  };
 
   return (
     <SessionChecker>
@@ -122,7 +236,7 @@ const DashboardPage: React.FC = () => {
                 {/* Bar Chart */}
                 <div>
                   <h4 className="text-md font-semibold mb-4">📉 Stock Overview Chart</h4>
-                  <div className="flex items-end justify-center space-x-8 h-auto shadow-lg rounded-md p-4">
+                  <div className="flex items-end justify-center space-x-8 h-auto shadow-md rounded-md p-4">
                     {/* Total */}
                     <div className="flex flex-col items-center justify-end">
                       <div
@@ -170,7 +284,7 @@ const DashboardPage: React.FC = () => {
                   </div>
 
                   {/* Right Card: Top 5 Reorder Items Table */}
-                  <div className="bg-white shadow-md rounded-md p-4 overflow-x-auto">
+                  <div className="bg-white shadow-md rounded-md p-2 overflow-x-auto">
                     <h4 className="text-md font-semibold mb-4">Top 5 Products by Reorder Level</h4>
                     <table className="w-full bg-white text-xs">
                       <thead className="bg-gray-100 text-gray-700">
@@ -201,6 +315,134 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Latest Transactions Summary */}
+              <div className="mt-12">
+                <h3 className="text-md font-semibold mb-6">🕒 Latest Transactions Summary</h3>
+                {/* Tabs */}
+                <div className="flex border-b border-gray-300 mb-4 text-xs">
+                  {["received", "stockout", "transfer"].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`py-2 px-4 capitalize font-medium border-b-2 transition-all duration-200 ${activeTab === tab
+                          ? "border-blue-500 text-blue-600"
+                          : "border-transparent text-gray-500 hover:text-blue-500"
+                        }`}
+                    >
+                      {tab === "stockout" ? "Stock Out" : tab}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tab Panels */}
+                <div className="bg-white shadow-md rounded-md p-2 overflow-x-auto">
+                  {activeTab === "received" && (
+                    <>
+                      <table className="w-full bg-white text-xs">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                            <th className='px-3 py-6'>PONumber</th>
+                            <th className='px-3 py-6'>SKU</th>
+                            <th className='px-3 py-6'>ProductName</th>
+                            <th className='px-3 py-6'>ProductQuantity</th>
+                            <th className='px-3 py-6'>Date Received</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {paginate(receivedData, receivedPage).map((item, idx) => (
+                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                              <td className='px-3 py-6 uppercase'>{item.PONumber}</td>
+                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                              <td className='px-3 py-6'>{item.DateReceived}</td>
+                            </tr>
+                          ))}
+                          {receivedData.length === 0 && (
+                            <tr>
+                              <td colSpan={5} className="text-center py-4 text-gray-500">
+                                No data available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                      {renderPagination(receivedPage, receivedData.length, setReceivedPage)}
+                    </>
+                  )}
+
+                  {activeTab === "stockout" && (
+                    <>
+                      <table className="w-full bg-white text-xs">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                            <th className='px-3 py-6'>Stock-Out ID</th>
+                            <th className='px-3 py-6'>ProductName</th>
+                            <th className='px-3 py-6'>SKU</th>
+                            <th className='px-3 py-6'>ProductQuantity</th>
+                            <th className='px-3 py-6'>Date Issuance</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {paginate(stockOutData, stockOutPage).map((item, idx) => (
+                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                              <td className='px-3 py-6 uppercase'>{item.ReferenceNumber}</td>
+                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                              <td className='px-3 py-6'>{item.DateIssuance}</td>
+                            </tr>
+                          ))}
+                          {stockOutData.length === 0 && (
+                            <tr>
+                              <td colSpan={4} className="text-center py-4 text-gray-500">
+                                No data available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                      {renderPagination(stockOutPage, stockOutData.length, setStockOutPage)}
+                    </>
+                  )}
+
+                  {activeTab === "transfer" && (
+                    <>
+                      <table className="w-full bg-white text-xs">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                            <th className='px-3 py-6'>Product Name</th>
+                            <th className='px-3 py-6'>Product Quantity</th>
+                            <th className='px-3 py-6'>SKU</th>
+                            <th className='px-3 py-6'>Unit Measure</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {paginate(transferData, transferPage).map((item, idx) => (
+                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                              <td className='px-3 py-6'>{item.UnitMeasure}</td>
+                            </tr>
+                          ))}
+                          {transferData.length === 0 && (
+                            <tr>
+                              <td colSpan={4} className="text-center py-4 text-gray-500">
+                                No data available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                      {renderPagination(transferPage, transferData.length, setTransferPage)}
+                    </>
+                  )}
+                </div>
+
+              </div>
+
             </div>
           )}
         </UserFetcher>
