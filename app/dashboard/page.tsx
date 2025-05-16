@@ -57,22 +57,22 @@ const DashboardPage: React.FC = () => {
         <UserFetcher>
           {(user) => (
             <div className="container mx-auto p-4">
+              {/* Inventory Summary */}
               <div className="mb-4">
                 <h3 className="text-md font-semibold mb-6">📊 Inventory Summary</h3>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                  <div className="bg-white shadow-md rounded-2xl p-4">
-                    <h4 className="text-sm text-gray-500">Total Items in Stock</h4>
+                  <div className="bg-white shadow-md rounded-md p-4">
+                    <h4 className="text-xs text-gray-500">Total Items in Stock</h4>
                     <p className="text-3xl font-bold text-green-600">{totalItemsCount}</p>
                   </div>
 
-                  <div className="bg-white shadow-md rounded-2xl p-4">
-                    <h4 className="text-sm text-gray-500">Low-Stock Items</h4>
+                  <div className="bg-white shadow-md rounded-md p-4">
+                    <h4 className="text-xs text-gray-500">Low-Stock Items</h4>
                     <p className="text-3xl font-bold text-yellow-500">{lowStockCount}</p>
                   </div>
 
-                  <div className="bg-white shadow-md rounded-2xl p-4">
-                    <h4 className="text-sm text-gray-500">Out-of-Stock Items</h4>
+                  <div className="bg-white shadow-md rounded-md p-4">
+                    <h4 className="text-xs text-gray-500">Out-of-Stock Items</h4>
                     <p className="text-3xl font-bold text-red-500">{outOfStockCount}</p>
                   </div>
                 </div>
@@ -80,7 +80,7 @@ const DashboardPage: React.FC = () => {
                 {/* Bar Chart */}
                 <div>
                   <h4 className="text-md font-semibold mb-4">📉 Stock Overview Chart</h4>
-                  <div className="flex items-end justify-center space-x-8 h-auto border-t border-gray-300 pt-4">
+                  <div className="flex items-end justify-center space-x-8 h-auto shadow-lg rounded-md p-4">
                     {/* Total */}
                     <div className="flex flex-col items-center justify-end">
                       <div
@@ -117,6 +117,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
             </div>
+
           )}
         </UserFetcher>
       </ParentLayout>
