@@ -9,7 +9,13 @@ const DashboardPage: React.FC = () => {
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const [lowStockCount, setLowStockCount] = useState(0);
   const [outOfStockCount, setOutOfStockCount] = useState(0);
-  
+
+  // Reorder data state
+  const [totalReorderLevel, setTotalReorderLevel] = useState(0);
+  const [topReorderItems, setTopReorderItems] = useState<
+    { ProductSKU: string; ProductName: string; ReorderLevel: number }[]
+  >([]);
+
   // Fetch Count Stocks
   useEffect(() => {
     const fetchInventoryData = async () => {
@@ -42,6 +48,42 @@ const DashboardPage: React.FC = () => {
     };
 
     fetchInventoryData();
+  }, []);
+
+  // Fetch Reorder Data
+  useEffect(() => {
+    const fetchReorderData = async () => {
+      try {
+        const response = await fetch('/api/Reorder/FetchData');
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+          let totalReorder = 0;
+
+          data.forEach((item: any) => {
+            totalReorder += Number(item.ReorderLevel) || 0;
+          });
+
+          setTotalReorderLevel(totalReorder);
+
+          // Sort descending by ReorderLevel and take top 5
+          const top5 = data
+            .sort((a: any, b: any) => (Number(b.ReorderLevel) || 0) - (Number(a.ReorderLevel) || 0))
+            .slice(0, 5)
+            .map((item: any) => ({
+              ProductSKU: item.ProductSKU,
+              ProductName: item.ProductName,
+              ReorderLevel: Number(item.ReorderLevel) || 0,
+            }));
+
+          setTopReorderItems(top5);
+        }
+      } catch (error) {
+        console.error('Failed to fetch reorder data:', error);
+      }
+    };
+
+    fetchReorderData();
   }, []);
 
   // Maximum height of the chart container in pixels (h-48 = 12rem = 192px)
@@ -116,8 +158,50 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
+              {/* Reorder Alert Summary */}
+              <div className="mb-4">
+                <h3 className="text-md font-semibold mb-6">🔔 Reorder Alert Summary</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Card: Total Reorder Level */}
+                  <div className="bg-white shadow-md rounded-md p-6 flex flex-col justify-center items-center">
+                    <h4 className="text-xl font-semibold mb-2">Total Reorder Level</h4>
+                    <p className="text-4xl font-bold text-blue-600">{totalReorderLevel}</p>
+                  </div>
+
+                  {/* Right Card: Top 5 Reorder Items Table */}
+                  <div className="bg-white shadow-md rounded-md p-4 overflow-x-auto">
+                    <h4 className="text-md font-semibold mb-4">Top 5 Products by Reorder Level</h4>
+                    <table className="w-full bg-white text-xs">
+                      <thead className="bg-gray-100 text-gray-700">
+                        <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                          <th className='px-3 py-6'>SKU</th>
+                          <th className='px-3 py-6'>Product Name</th>
+                          <th className='px-3 py-6'>Reorder Level</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topReorderItems.length > 0 ? (
+                          topReorderItems.map((item, idx) => (
+                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50">
+                              <td className="px-3 py-6 text-sm text-gray-800 uppercase">{item.ProductSKU}</td>
+                              <td className="px-3 py-6 text-sm text-gray-800 capitalize">{item.ProductName}</td>
+                              <td className="px-3 py-6 text-sm font-semibold text-blue-600">{item.ReorderLevel}</td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={3} className="py-4 text-center text-gray-500">
+                              No data available
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </UserFetcher>
       </ParentLayout>
