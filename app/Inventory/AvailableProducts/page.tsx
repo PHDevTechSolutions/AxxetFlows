@@ -105,7 +105,7 @@ const ReportItem: React.FC = () => {
             (!rangeStart || createAt >= rangeStart) &&
             (!rangeEnd || createAt <= rangeEnd);
 
-        const isAvailable = post.ProductStatus.toLowerCase() === "available";
+        const isAvailable = post.ProductStatus.toLowerCase() === "available" || post.ProductStatus.toLowerCase() === "low-stock";
 
         return inSearchTerm && inDateRange && isAvailable;
     });

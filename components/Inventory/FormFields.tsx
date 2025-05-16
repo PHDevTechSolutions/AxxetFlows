@@ -158,6 +158,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
                 <select value={ProductStatus} onChange={(e) => setProductStatus(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
                     <option value="">Select Status</option>
                     <option value="Available">Available</option>
+                    <option value="Low-Stock">Low-Stock</option>
                     <option value="No-Stock">No-Stock</option>
                     <option value="Draft">Draft</option>
                 </select>

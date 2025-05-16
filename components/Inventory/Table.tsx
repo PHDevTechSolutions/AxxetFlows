@@ -26,8 +26,9 @@ interface TableProps {
 const getStatusBadgeColor = (status: string) => {
     const normalized = status.toLowerCase();
     if (normalized === "available") return "bg-emerald-500 text-white";
+    if (normalized === "low-stock") return "bg-yellow-500 text-white";
     if (normalized === "no-stock") return "bg-red-600 text-white";
-    if (normalized === "draft") return "bg-yellow-500 text-white";
+    if (normalized === "draft") return "bg-gray-500 text-white";
     return "bg-gray-100 text-gray-800";
 };
 
