@@ -26,6 +26,7 @@ interface TableProps {
   posts: Post[];
   handleEdit: (post: Post) => void;
   handleDelete: (postId: string) => void;
+  Role: string;
 }
 
 const getStatusBadgeColor = (status: string) => {
@@ -57,7 +58,7 @@ const getStatusBadgeColor = (status: string) => {
 
 const ITEMS_PER_PAGE = 10;
 
-const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
+const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Filter states
@@ -214,12 +215,16 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
 
                   <td className="px-3 py-6" onClick={(e) => e.stopPropagation()}>
                     <div className="flex space-x-2">
+                      {(Role !== "Auditor" && Role !== "Support Staff") && (
                       <button onClick={() => handleEdit(post)} className="text-xs py-2 px-4 rounded bg-blue-600 hover:bg-blue-800 text-white flex items-center">
                         <FaEdit size={15} className="mr-1" /> Edit
                       </button>
+                      )}
+                      {(Role !== "Auditor" && Role !== "Purchasing Officer" && Role !== "Support Staff") && (
                       <button onClick={() => handleDelete(post._id)} className="text-xs py-2 px-4 rounded bg-red-600 hover:bg-red-800 text-white flex items-center">
                         <FaTrash size={15} className="mr-1" /> Delete
                       </button>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -109,16 +109,18 @@ const ListofUser: React.FC = () => {
                 ) : (
                   <>
                     <div className="flex justify-between items-center mb-4">
+                      {user && user.Role !== "Auditor" && (
                       <button
                         className="hover:bg-blue-900 bg-[#2563EB] text-white px-4 text-xs py-2 rounded flex gap-1"
                         onClick={() => setShowForm(true)}
                       >
                         <HiMiniPlus size={15}/>Create User
                       </button>
+                      )}
                     </div>
 
                     <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
-                      <h2 className="text-lg font-bold mb-2">List of Subscribers</h2>
+                      <h2 className="text-lg font-bold mb-2">List of Users</h2>
                       <SearchFilters
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}

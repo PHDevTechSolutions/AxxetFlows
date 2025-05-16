@@ -175,9 +175,11 @@ const ReportItem: React.FC = () => {
                                 ) : (
                                     <>
                                         <div className="flex justify-between items-center mb-4">
+                                            {user && user.Role !== "Auditor" && (
                                             <button className="bg-blue-600 hover:bg-blue-800 text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
                                                 <FaPlusCircle size={15} />Add Products
                                             </button>
+                                            )}
                                         </div>
                                         <h2 className="text-lg font-bold mb-2">List of Available Products</h2>
                                         <p className="text-sm text-gray-600 mb-4">

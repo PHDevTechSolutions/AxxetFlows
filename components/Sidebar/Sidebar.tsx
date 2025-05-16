@@ -113,7 +113,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Categories",
       icon: FaTags,
       subItems: [
-        { title: "Product Categories", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Product Categories", href: `/Product/Categories${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
@@ -129,7 +129,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Users & Roles",
       icon: FaUsersCog,
       subItems: [
-        { title: "Manage Access Control Users", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Manage Access Control Users", href: `/User/ListofUser${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {

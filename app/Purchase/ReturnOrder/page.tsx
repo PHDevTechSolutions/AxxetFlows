@@ -191,6 +191,7 @@ const ReportItem: React.FC = () => {
                                                 posts={currentPosts}
                                                 handleEdit={handleEdit}
                                                 handleDelete={confirmDelete}
+                                                Role={user ? user.Role : ""}
                                             />
 
                                             <div className="text-xs mt-2">

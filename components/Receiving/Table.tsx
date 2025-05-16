@@ -28,6 +28,7 @@ interface TableProps {
     posts: Post[];
     handleEdit: (post: Post) => void;
     handleDelete: (postId: string) => void;
+    Role: string;
 }
 
 const getStatusBadgeColor = (ReceivedStatus: string) => {
@@ -48,7 +49,7 @@ const getStatusBadgeColor = (ReceivedStatus: string) => {
 
 const ITEMS_PER_PAGE = 10;
 
-const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
+const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [filterStatus, setFilterStatus] = useState("");
     const [filterLocation, setFilterLocation] = useState("");
@@ -254,12 +255,12 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
                                 </td>
                                 <td className="px-3 py-6">
                                     <div className="flex space-x-2">
-                                        {post.ReceivedStatus.toLowerCase() !== "approved" && (
+                                        {(post.ReceivedStatus.toLowerCase() !== "approved" && Role !== "Auditor" && Role !== "Support Staff") && (
                                             <button onClick={() => handleEdit(post)} className="text-xs py-1 px-3 rounded bg-blue-600 hover:bg-blue-800 text-white flex items-center">
                                                 <FaEdit size={12} className="mr-1" /> Edit
                                             </button>
                                         )}
-                                        {post.ReceivedStatus.toLowerCase() === "approved" && (
+                                        {(post.ReceivedStatus.toLowerCase() === "approved" && Role !== "Auditor" && Role !== "Support Staff") && (
                                             <button
                                                 onClick={() => handleAddToInventory(post)} disabled={isSubmitting}
                                                 className="text-xs py-1 px-3 rounded bg-blue-600 hover:bg-green-800 text-white flex items-center"
@@ -267,9 +268,11 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
                                                 <FaPlusCircle size={12} className="mr-1" /> {isSubmitting ? 'Submitting...' : 'Add'}
                                             </button>
                                         )}
+                                        {(Role !== "Warehouse Staff" && Role !== "Auditor" && Role !== "Support Staff") && (
                                         <button onClick={() => handleDelete(post._id)} className="text-xs py-1 px-3 rounded bg-red-600 hover:bg-red-800 text-white flex items-center">
                                             <FaTrash size={12} className="mr-1" /> Delete
                                         </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

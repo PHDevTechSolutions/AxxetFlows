@@ -6,9 +6,9 @@ import SessionChecker from "../../../components/Session/SessionChecker";
 import UserFetcher from "../../../components/UserFetcher/UserFetcher";
 
 // Pages
-import AddAccountForm from "../../../components/Reorder/Form";
-import Table from "../../../components/Reorder/Table";
-import SearchFilters from "../../../components/Reorder/SearchFilters";
+import AddAccountForm from "../../../components/Categories/Form";
+import Table from "../../../components/Categories/Table";
+import SearchFilters from "../../../components/Categories/SearchFilters";
 
 // Toasts
 import { ToastContainer, toast } from "react-toastify";
@@ -42,7 +42,7 @@ const ReportItem: React.FC = () => {
     // Fetch Data from the API
     const fetchDatabase = async () => {
         try {
-            const response = await fetch("/api/Reorder/FetchData");
+            const response = await fetch("/api/Categories/FetchData");
             const data = await response.json();
             setPosts(data);
         } catch (error) {
@@ -94,8 +94,7 @@ const ReportItem: React.FC = () => {
     // Filtered Data
     const filteredAccounts = posts.filter((post) => {
         const inSearchTerm =
-            post.ProductSKU.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            post.ProductName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.ProductCategories.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.ReferenceNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
         const createAt = new Date(post.createAt).getTime();
@@ -131,7 +130,7 @@ const ReportItem: React.FC = () => {
     const handleDelete = async () => {
         if (!postToDelete) return;
         try {
-            const response = await fetch(`/api/Reorder/DeleteData`, {
+            const response = await fetch(`/api/Categories/DeleteData`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -176,11 +175,11 @@ const ReportItem: React.FC = () => {
                                         <div className="flex justify-between items-center mb-4">
                                             {(user && user.Role !== "Auditor" && user && user.Role !== "Support Staff") && (
                                             <button className="bg-blue-600 hover:bg-blue-800 text-white px-4 text-xs py-2 rounded flex gap-1" onClick={() => setShowForm(true)}>
-                                                <FaPlusCircle size={15} />Add Item
+                                                <FaPlusCircle size={15} />Add Category
                                             </button>
                                             )}
                                         </div>
-                                        <h2 className="text-lg font-bold mb-2">List of Reorder Items</h2>
+                                        <h2 className="text-lg font-bold mb-2">Categories</h2>
                                         <p className="text-sm text-gray-600 mb-4">
                                             This section displays a comprehensive list of all products available in the inventory. Users can easily browse through detailed information for each product, including names, descriptions, categories, quantities, pricing, and status. The organized layout helps with efficient inventory management, allowing quick access to product data for restocking, sales, and reporting. Keeping an updated and transparent product list supports smooth operations and informed decision-making.
                                         </p>

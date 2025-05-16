@@ -17,12 +17,22 @@ interface ContainerTableProps {
     Location: string;
 }
 
-const getStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
-        case "subscribers":
-            return "bg-[#2563EB] text-white";
+const getStatusBadgeColor = (Role: string) => {
+    switch (Role.toLowerCase()) {
+        case "inventory manager":
+            return "bg-blue-600 text-white"; // Blue
+        case "sales staff":
+            return "bg-green-600 text-white"; // Green
+        case "warehouse staff":
+            return "bg-yellow-500 text-white"; // Yellow
+        case "auditor":
+            return "bg-purple-600 text-white"; // Purple
+        case "purchasing officer":
+            return "bg-pink-600 text-white"; // Pink
+        case "support staff":
+            return "bg-indigo-600 text-white"; // Indigo
         default:
-            return "bg-gray-100 text-gray-800";
+            return "bg-gray-200 text-gray-800"; // Default
     }
 };
 
@@ -52,7 +62,7 @@ const ReportItemTable: React.FC<ContainerTableProps> = ({
 
     return (
         <div className="overflow-x-auto w-full">
-            <table className="w-full bg-white border border-gray-300 text-xs">
+            <table className="w-full bg-white text-xs">
                 <thead className="bg-gray-100 text-gray-700">
                     <tr>
                         {[  
@@ -61,40 +71,38 @@ const ReportItemTable: React.FC<ContainerTableProps> = ({
                             "Role",
                             "Actions",
                         ].map((header) => (
-                            <th key={header} className="p-2 border text-left whitespace-nowrap">
+                            <th key={header} className="px-3 py-6 text-left whitespace-nowrap">
                                 {header}
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="whitespace-nowrap">
                     {paginatedPosts.map((post) => (
-                        <tr key={post._id} className="text-left border-b">
-                            <td className="p-2 border capitalize">{post.Lastname}, {post.Firstname}</td>
-                            <td className="p-2 border">{post.Email}</td>
-                            <td className="p-2 border">
-                                <span
-                                    className={`px-2 py-1 rounded-full text-[10px] font-semibold ${getStatusBadgeColor(
-                                        post.Role
-                                    )}`}
-                                >
-                                    {post.Role}
-                                </span>
+                        <tr key={post._id} className="text-left border-b cursor-pointer hover:bg-gray-50">
+                            <td className="px-3 py-6 capitalize">{post.Lastname}, {post.Firstname}</td>
+                            <td className="px-3 py-6">{post.Email}</td>
+                            <td className="px-3 py-6">
+                                <span className={`px-2 py-1 rounded-full text-[10px] font-semibold ${getStatusBadgeColor( post.Role )}`}>{post.Role}</span>
                             </td>
-                            <td className="p-2 border">
+                            <td className="px-3 py-6">
                                 <div className="flex space-x-2">
+                                    {(Role !== "Auditor") && (
                                     <button
                                         onClick={() => handleEdit(post)}
-                                        className="px-2 py-1 text-xs bg-[#2563EB] hover:bg-blue-800 text-white rounded-md flex items-center"
+                                        className="text-xs py-2 px-4 rounded bg-blue-600 hover:bg-blue-800 text-white flex items-center"
                                     >
                                         <HiOutlinePencil size={15} className="mr-1" /> Edit
                                     </button>
+                                    )}
+                                    {(Role !== "Auditor") && (
                                     <button
                                         onClick={() => handleDelete(post._id)}
-                                        className="px-2 py-1 text-xs bg-red-600 hover:bg-red-800 text-white rounded-md flex items-center"
+                                        className="text-xs py-2 px-4 rounded bg-red-600 hover:bg-red-800 text-white flex items-center"
                                     >
                                         <HiOutlineTrash size={15} className="mr-1" /> Delete
                                     </button>
+                                    )}
                                 </div>
                             </td>
                         </tr>
