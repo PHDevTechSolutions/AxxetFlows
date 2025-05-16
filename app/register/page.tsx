@@ -35,7 +35,7 @@ const Register: React.FC = () => {
       if (response.ok) {
         toast.success("Registration successful!");
         setTimeout(() => {
-          router.push("/Login");
+          router.push("/login");
         }, 1200);
       } else {
         toast.error(result.message || "Registration failed!");
@@ -76,7 +76,7 @@ const Register: React.FC = () => {
         </form>
         <div className="text-center text-xs">
           Already have a account?{" "}
-          <Link href="/Login" className="text-blue-600 hover:underline">Sign In</Link>
+          <Link href="/login" className="text-blue-600 hover:underline">Sign In</Link>
         </div>
         <footer className="mt-4 text-center text-xs">
           <p>AxxetFlow - PHDev-Tech Solutions</p>

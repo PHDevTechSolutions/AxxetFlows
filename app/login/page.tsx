@@ -36,7 +36,7 @@ const Login: React.FC = () => {
       if (response.ok) {
         toast.success("Login successful!");
         setTimeout(() => {
-          router.push(`/Dashboard?id=${encodeURIComponent(result.userId)}`);
+          router.push(`/dashboard?id=${encodeURIComponent(result.userId)}`);
         }, 1500);
       } else {
         toast.error(result.message || "Login failed!");
@@ -85,7 +85,7 @@ const Login: React.FC = () => {
           </div>
           <div className="text-center text-xs">
             Don’t have an account?{" "}
-            <Link href="/Register" className="text-blue-600 hover:underline">Sign Up</Link>
+            <Link href="/register" className="text-blue-600 hover:underline">Sign Up</Link>
           </div>
         </form>
         <footer className="mt-4 text-center text-xs">
