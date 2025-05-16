@@ -207,6 +207,8 @@ const DashboardPage: React.FC = () => {
     return <div className="mt-2 flex justify-center">{pages}</div>;
   };
 
+  const isLoading = false; // Toggle to true while fetching data
+
   return (
     <SessionChecker>
       <ParentLayout>
@@ -319,124 +321,153 @@ const DashboardPage: React.FC = () => {
               {/* Latest Transactions Summary */}
               <div className="mt-12">
                 <h3 className="text-md font-semibold mb-6">🕒 Latest Transactions Summary</h3>
-                {/* Tabs */}
-                <div className="flex border-b border-gray-300 mb-4 text-xs">
-                  {["received", "stockout", "transfer"].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`py-2 px-4 capitalize font-medium border-b-2 transition-all duration-200 ${activeTab === tab
-                          ? "border-blue-500 text-blue-600"
-                          : "border-transparent text-gray-500 hover:text-blue-500"
-                        }`}
-                    >
-                      {tab === "stockout" ? "Stock Out" : tab}
-                    </button>
-                  ))}
+                {/* Responsive Tabs with Icons, Badges & Mobile-Friendly Layout */}
+                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4 text-sm">
+                  <button
+                    onClick={() => setActiveTab("received")}
+                    className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "received" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
+                      }`}
+                  >
+                    📥 <span className="hidden sm:inline">Received</span>
+                    <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {receivedData.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("stockout")}
+                    className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "stockout" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600"
+                      }`}
+                  >
+                    📦 <span className="hidden sm:inline">Stock-Out</span>
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {stockOutData.length}
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("transfer")}
+                    className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "transfer" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                      }`}
+                  >
+                    🔄 <span className="hidden sm:inline">Transfer</span>
+                    <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {transferData.length}
+                    </span>
+                  </button>
                 </div>
 
+
                 {/* Tab Panels */}
-                <div className="bg-white shadow-md rounded-md p-2 overflow-x-auto">
-                  {activeTab === "received" && (
+                <div key={activeTab} className="bg-white shadow-md rounded-md p-2 overflow-x-auto animate-fade-in transition-all duration-300 ease-in-out">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-32">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                  ) : (
                     <>
-                      <table className="w-full bg-white text-xs">
-                        <thead className="bg-gray-100 text-gray-700">
-                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
-                            <th className='px-3 py-6'>PONumber</th>
-                            <th className='px-3 py-6'>SKU</th>
-                            <th className='px-3 py-6'>ProductName</th>
-                            <th className='px-3 py-6'>ProductQuantity</th>
-                            <th className='px-3 py-6'>Date Received</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {paginate(receivedData, receivedPage).map((item, idx) => (
-                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
-                              <td className='px-3 py-6 uppercase'>{item.PONumber}</td>
-                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
-                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
-                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
-                              <td className='px-3 py-6'>{item.DateReceived}</td>
-                            </tr>
-                          ))}
-                          {receivedData.length === 0 && (
-                            <tr>
-                              <td colSpan={5} className="text-center py-4 text-gray-500">
-                                No data available
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                      {renderPagination(receivedPage, receivedData.length, setReceivedPage)}
-                    </>
-                  )}
+                      {activeTab === "received" && (
+                        <>
+                          <table className="w-full bg-white text-xs">
+                            <thead className="bg-gray-100 text-gray-700">
+                              <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                                <th className='px-3 py-6'>PONumber</th>
+                                <th className='px-3 py-6'>SKU</th>
+                                <th className='px-3 py-6'>ProductName</th>
+                                <th className='px-3 py-6'>ProductQuantity</th>
+                                <th className='px-3 py-6'>Date Received</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {paginate(receivedData, receivedPage).map((item, idx) => (
+                                <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                                  <td className='px-3 py-6 uppercase'>{item.PONumber}</td>
+                                  <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                                  <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                                  <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                                  <td className='px-3 py-6'>{item.DateReceived}</td>
+                                </tr>
+                              ))}
+                              {receivedData.length === 0 && (
+                                <tr>
+                                  <td colSpan={5} className="text-center py-4 text-gray-500">
+                                    No data available
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                          {renderPagination(receivedPage, receivedData.length, setReceivedPage)}
+                        </>
+                      )}
 
-                  {activeTab === "stockout" && (
-                    <>
-                      <table className="w-full bg-white text-xs">
-                        <thead className="bg-gray-100 text-gray-700">
-                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
-                            <th className='px-3 py-6'>Stock-Out ID</th>
-                            <th className='px-3 py-6'>ProductName</th>
-                            <th className='px-3 py-6'>SKU</th>
-                            <th className='px-3 py-6'>ProductQuantity</th>
-                            <th className='px-3 py-6'>Date Issuance</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {paginate(stockOutData, stockOutPage).map((item, idx) => (
-                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
-                              <td className='px-3 py-6 uppercase'>{item.ReferenceNumber}</td>
-                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
-                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
-                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
-                              <td className='px-3 py-6'>{item.DateIssuance}</td>
-                            </tr>
-                          ))}
-                          {stockOutData.length === 0 && (
-                            <tr>
-                              <td colSpan={4} className="text-center py-4 text-gray-500">
-                                No data available
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                      {renderPagination(stockOutPage, stockOutData.length, setStockOutPage)}
-                    </>
-                  )}
+                      {activeTab === "stockout" && (
+                        <>
+                          <table className="w-full bg-white text-xs">
+                            <thead className="bg-gray-100 text-gray-700">
+                              <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                                <th className='px-3 py-6'>Stock-Out ID</th>
+                                <th className='px-3 py-6'>ProductName</th>
+                                <th className='px-3 py-6'>SKU</th>
+                                <th className='px-3 py-6'>ProductQuantity</th>
+                                <th className='px-3 py-6'>Date Issuance</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {paginate(stockOutData, stockOutPage).map((item, idx) => (
+                                <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                                  <td className='px-3 py-6 uppercase'>{item.ReferenceNumber}</td>
+                                  <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                                  <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                                  <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                                  <td className='px-3 py-6'>{item.DateIssuance}</td>
+                                </tr>
+                              ))}
+                              {stockOutData.length === 0 && (
+                                <tr>
+                                  <td colSpan={5} className="text-center py-4 text-gray-500">
+                                    No data available
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                          {renderPagination(stockOutPage, stockOutData.length, setStockOutPage)}
+                        </>
+                      )}
 
-                  {activeTab === "transfer" && (
-                    <>
-                      <table className="w-full bg-white text-xs">
-                        <thead className="bg-gray-100 text-gray-700">
-                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
-                            <th className='px-3 py-6'>Product Name</th>
-                            <th className='px-3 py-6'>Product Quantity</th>
-                            <th className='px-3 py-6'>SKU</th>
-                            <th className='px-3 py-6'>Unit Measure</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {paginate(transferData, transferPage).map((item, idx) => (
-                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
-                              <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
-                              <td className='px-3 py-6'>{item.ProductQuantity}</td>
-                              <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
-                              <td className='px-3 py-6'>{item.UnitMeasure}</td>
-                            </tr>
-                          ))}
-                          {transferData.length === 0 && (
-                            <tr>
-                              <td colSpan={4} className="text-center py-4 text-gray-500">
-                                No data available
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                      {renderPagination(transferPage, transferData.length, setTransferPage)}
+                      {activeTab === "transfer" && (
+                        <>
+                          <table className="w-full bg-white text-xs">
+                            <thead className="bg-gray-100 text-gray-700">
+                              <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                                <th className='px-3 py-6'>Product Name</th>
+                                <th className='px-3 py-6'>Product Quantity</th>
+                                <th className='px-3 py-6'>SKU</th>
+                                <th className='px-3 py-6'>Unit Measure</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {paginate(transferData, transferPage).map((item, idx) => (
+                                <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                                  <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
+                                  <td className='px-3 py-6'>{item.ProductQuantity}</td>
+                                  <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                                  <td className='px-3 py-6'>{item.UnitMeasure}</td>
+                                </tr>
+                              ))}
+                              {transferData.length === 0 && (
+                                <tr>
+                                  <td colSpan={4} className="text-center py-4 text-gray-500">
+                                    No data available
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                          {renderPagination(transferPage, transferData.length, setTransferPage)}
+                        </>
+                      )}
                     </>
                   )}
                 </div>
