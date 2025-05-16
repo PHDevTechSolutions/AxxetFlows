@@ -8,7 +8,7 @@ interface Post {
     ReferenceNumber: string;
     ProductSKU: string;
     ProductName: string;
-    CurrentStock: string;
+    ProductQuantity: string;
     ReorderLevel: string;
     SupplierName: string;
     LastOrderDate: string;
@@ -77,7 +77,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
             { header: "Reference Number", key: "ReferenceNumber", width: 20 },
             { header: "Product SKU", key: "ProductSKU", width: 20 },
             { header: "Product Name", key: "ProductName", width: 25 },
-            { header: "Current Stock", key: "CurrentStock", width: 15 },
+            { header: "Current Stock", key: "ProductQuantity", width: 15 },
             { header: "Reorder Level", key: "ReorderLevel", width: 15 },
             { header: "Supplier Name", key: "SupplierName", width: 25 },
             { header: "Last Order Date", key: "LastOrderDate", width: 20 },
@@ -93,7 +93,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
                 ReferenceNumber: post.ReferenceNumber,
                 ProductSKU: post.ProductSKU,
                 ProductName: post.ProductName,
-                CurrentStock: post.CurrentStock,
+                ProductQuantity: post.ProductQuantity,
                 ReorderLevel: post.ReorderLevel,
                 SupplierName: post.SupplierName,
                 LastOrderDate: post.LastOrderDate,
@@ -143,9 +143,9 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
                         {paginatedPosts.map((post) => (
                             <tr key={post._id} className="text-left border-b cursor-pointer hover:bg-gray-50">
                                 <td className="px-3 py-6">{post.ReferenceNumber}</td>
-                                <td className="px-3 py-6">{post.ProductSKU}</td>
+                                <td className="px-3 py-6 uppercase">{post.ProductSKU}</td>
                                 <td className="px-3 py-6 capitalize">{post.ProductName}</td>
-                                <td className="px-3 py-6 capitalize">{post.CurrentStock}</td>
+                                <td className="px-3 py-6 capitalize">{post.ProductQuantity}</td>
                                 <td className="px-3 py-6 capitalize">{post.ReorderLevel}</td>
                                 <td className="px-3 py-6 uppercase">{post.SupplierName}</td>
                                 <td className="px-3 py-6 capitalize">{post.LastOrderDate}</td>

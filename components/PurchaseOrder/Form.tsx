@@ -17,9 +17,9 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
   const [PODate, setPODate] = useState(editData?.PODate || "");
   const [BuyerName, setBuyerName] = useState(editData?.BuyerName || "");
   const [SupplierName, setSupplierName] = useState(editData?.SupplierName || "");
-  const [ItemName, setItemName] = useState(editData?.ItemName || "");
+  const [ProductName, setProductName] = useState(editData?.ProductName || "");
   const [Quantity, setQuantity] = useState(editData?.Quantity || "");
-  const [UnitPrice, setUnitPrice] = useState(editData?.UnitPrice || "");
+  const [ProductCostPrice, setProductCostPrice] = useState(editData?.ProductCostPrice || "");
   const [PaymentTerms, setPaymentTerms] = useState(editData?.PaymentTerms || "");
   const [DeliveryAddress, setDeliveryAddress] = useState(editData?.DeliveryAddress || "");
   const [DeliveryDate, setDeliveryDate] = useState(editData?.DeliveryDate || "");
@@ -39,7 +39,7 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceNumber, PONumber, PODate, BuyerName, SupplierName, ItemName, Quantity, UnitPrice, PaymentTerms, DeliveryAddress,
+        ReferenceNumber, PONumber, PODate, BuyerName, SupplierName, ProductName, Quantity, ProductCostPrice, PaymentTerms, DeliveryAddress,
         DeliveryDate, DeliveryStatus, DeliveryRemarks, id: editData?._id,
       }),
     });
@@ -69,9 +69,9 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
           PODate={PODate} setPODate={setPODate}
           BuyerName={BuyerName} setBuyerName={setBuyerName}
           SupplierName={SupplierName} setSupplierName={setSupplierName}
-          ItemName={ItemName} setItemName={setItemName}
+          ProductName={ProductName} setProductName={setProductName}
           Quantity={Quantity} setQuantity={setQuantity}
-          UnitPrice={UnitPrice} setUnitPrice={setUnitPrice}
+          ProductCostPrice={ProductCostPrice} setProductCostPrice={setProductCostPrice}
           PaymentTerms={PaymentTerms} setPaymentTerms={setPaymentTerms}
           DeliveryAddress={DeliveryAddress} setDeliveryAddress={setDeliveryAddress}
           DeliveryDate={DeliveryDate} setDeliveryDate={setDeliveryDate}

@@ -46,7 +46,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
     editData,
 }) => {
 
-    const [companies, setCompanies] = useState<{ id: string; SupplierName: string; value: string; label: string }[]>([]);
+    const [supplier, setSupplier] = useState<{ id: string; SupplierName: string; value: string; label: string }[]>([]);
+    const [ponumber, setponumber] = useState<{ id: string; PONumber: string; value: string; label: string }[]>([]);
     const [isInput, setIsInput] = useState(false); // toggle state
 
     // Generate Reference Number only when not editing
@@ -72,32 +73,35 @@ const FormFields: React.FC<FormFieldsProps> = ({
             setReferenceNumber(generateReferenceNumber());
         }
     }, [editData]);
-
+    
+    // Auto Generate Number
     const generateReferenceNumber = () => {
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
         const randomNumber = Math.floor(Math.random() * 1000);
         return `REC-${randomString}-${randomNumber}`;
     };
 
+    // Fetch Supplier
     useEffect(() => {
-        const fetchCompanies = async () => {
+        const fetchSupplier = async () => {
             try {
                 const response = await fetch('/api/PurchaseOrder/FetchSupplier');
                 const data = await response.json();
-                setCompanies(data);
+                setSupplier(data);
             } catch (error) {
-                console.error('Error fetching companies:', error);
+                console.error('Error fetching data:', error);
             }
         };
-        fetchCompanies();
+        fetchSupplier();
     }, []);
 
-    const CompanyOptions = companies.map((company) => ({
-        value: company.SupplierName,
-        label: company.SupplierName,
+    const SupplierOptions = supplier.map((supplier) => ({
+        value: supplier.SupplierName,
+        label: supplier.SupplierName,
     }));
-
-    const handleCompanyChange = async (selectedOption: any) => {
+    
+    // Handle Data after Fetching Supplier
+    const handleSupplierChange = async (selectedOption: any) => {
         const selected = selectedOption ? selectedOption.value : '';
         setSupplierName(selected);
 
@@ -109,10 +113,50 @@ const FormFields: React.FC<FormFieldsProps> = ({
                     console.log('Fetched Supplier Details:', details);
                     // Set other supplier details here if needed
                 } else {
-                    console.error(`Company not found: ${selected}`);
+                    console.error(`data not found: ${selected}`);
                 }
             } catch (error) {
-                console.error('Error fetching company details:', error);
+                console.error('Error fetching data details:', error);
+            }
+        }
+    };
+
+    // Fetch PO Number
+    useEffect(() => {
+        const fetchPurchaseOrder = async () => {
+            try {
+                const response = await fetch('/api/Received/FetchPO');
+                const data = await response.json();
+                setponumber(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchPurchaseOrder();
+    }, []);
+
+    const POOptions = ponumber.map((po) => ({
+        value: po.PONumber,
+        label: po.PONumber,
+    }));
+
+    // Handle Data after Fetching PO
+    const handlePOChange = async (selectedOption: any) => {
+        const selected = selectedOption ? selectedOption.value : '';
+        setPONumber(selected);
+
+        if (selected) {
+            try {
+                const response = await fetch(`/api/Received/FetchPO?PONumber=${encodeURIComponent(selected)}`);
+                if (response.ok) {
+                    const details = await response.json();
+                    console.log('Fetched Data Details:', details);
+                    // Set other supplier details here if needed
+                } else {
+                    console.error(`data not found: ${selected}`);
+                }
+            } catch (error) {
+                console.error('Error fetching data details:', error);
             }
         }
     };
@@ -131,16 +175,20 @@ const FormFields: React.FC<FormFieldsProps> = ({
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Supplier Name</label>
                 {editData ? (
-                    <input type="text" id="CompanyName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                    <input type="text" id="SupplierName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
                 ) : (
-                    <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs" placeholder="Select Company" isClearable />
+                    <Select id="SupplierName" options={SupplierOptions} onChange={handleSupplierChange} className="w-full text-xs" placeholder="Select Supplier" isClearable />
                 )}
             </div>
 
             {/* PO Number */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Purchase Order Number</label>
-                <input type="text" value={PONumber} onChange={(e) => setPONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
+                {editData ? (
+                    <input type="text" id="PONumber" value={PONumber} onChange={(e) => setPONumber(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                ) : (
+                    <Select id="PONumber" options={POOptions} onChange={handlePOChange} className="w-full text-xs" placeholder="Select Purchase Order Number" isClearable />
+                )}
             </div>
 
             {/* Received By */}

@@ -12,9 +12,9 @@ interface FormFieldsProps {
     PODate: string; setPODate: (value: string) => void;
     BuyerName: string; setBuyerName: (value: string) => void;
     SupplierName: string; setSupplierName: (value: string) => void;
-    ItemName: string; setItemName: (value: string) => void;
+    ProductName: string; setProductName: (value: string) => void;
     Quantity: string; setQuantity: (value: string) => void;
-    UnitPrice: string; setUnitPrice: (value: string) => void;
+    ProductCostPrice: string; setProductCostPrice: (value: string) => void;
     PaymentTerms: string; setPaymentTerms: (value: string) => void;
     DeliveryAddress: string; setDeliveryAddress: (value: string) => void;
     DeliveryDate: string; setDeliveryDate: (value: string) => void;
@@ -29,9 +29,9 @@ const FormFields: React.FC<FormFieldsProps> = ({
     PODate, setPODate,
     BuyerName, setBuyerName,
     SupplierName, setSupplierName,
-    ItemName, setItemName,
+    ProductName, setProductName,
     Quantity, setQuantity,
-    UnitPrice, setUnitPrice,
+    ProductCostPrice, setProductCostPrice,
     PaymentTerms, setPaymentTerms,
     DeliveryAddress, setDeliveryAddress,
     DeliveryDate, setDeliveryDate,
@@ -40,7 +40,8 @@ const FormFields: React.FC<FormFieldsProps> = ({
     editData,
 }) => {
 
-    const [companies, setCompanies] = useState<{ id: string; SupplierName: string; value: string; label: string }[]>([]);
+    const [supplier, setSupplier] = useState<{ id: string; SupplierName: string; value: string; label: string }[]>([]);
+    const [productname, setproductname] = useState<{ id: string; ProductName: string; value: string; label: string }[]>([]);
     const [isInput, setIsInput] = useState(false); // toggle state
 
     // Generate Reference Number only when not editing
@@ -51,9 +52,9 @@ const FormFields: React.FC<FormFieldsProps> = ({
             setPONumber(editData.PONumber || "");
             setPODate(editData.PODate || "");
             setBuyerName(editData.BuyerName || "");
-            setItemName(editData.ItemName || "");
+            setProductName(editData.ProductName || "");
             setQuantity(editData.Quantity || "");
-            setUnitPrice(editData.UnitPrice || "");
+            setProductCostPrice(editData.ProductCostPrice || "");
             setPaymentTerms(editData.PaymentTerms || "");
             setDeliveryAddress(editData.DeliveryAddress || "");
             setDeliveryDate(editData.DeliveryDate || "");
@@ -70,25 +71,27 @@ const FormFields: React.FC<FormFieldsProps> = ({
         return `REF-${randomString}-${randomNumber}`;
     };
 
+    // Fetch Suppliers
     useEffect(() => {
-        const fetchCompanies = async () => {
+        const fetchSupplier = async () => {
             try {
                 const response = await fetch('/api/PurchaseOrder/FetchSupplier');
                 const data = await response.json();
-                setCompanies(data);
+                setSupplier(data);
             } catch (error) {
                 console.error('Error fetching companies:', error);
             }
         };
-        fetchCompanies();
+        fetchSupplier();
     }, []);
 
-    const CompanyOptions = companies.map((company) => ({
-        value: company.SupplierName,
-        label: company.SupplierName,
+    const SupplierOptions = supplier.map((supplier) => ({
+        value: supplier.SupplierName,
+        label: supplier.SupplierName,
     }));
 
-    const handleCompanyChange = async (selectedOption: any) => {
+    // Handle Data after Fetching Supplier
+    const handleSupplierChange = async (selectedOption: any) => {
         const selected = selectedOption ? selectedOption.value : '';
         setSupplierName(selected);
 
@@ -100,17 +103,66 @@ const FormFields: React.FC<FormFieldsProps> = ({
                     console.log('Fetched Supplier Details:', details);
                     // Set other supplier details here if needed
                 } else {
-                    console.error(`Company not found: ${selected}`);
+                    console.error(`data not found: ${selected}`);
                 }
             } catch (error) {
-                console.error('Error fetching company details:', error);
+                console.error('Error fetching data details:', error);
             }
         }
     };
 
+    // Fetch Products
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/PurchaseOrder/FetchProduct');
+                const data = await response.json();
+                setproductname(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const ProductOptions = productname.map((product) => ({
+        value: product.ProductName,
+        label: product.ProductName,
+    }));
+    
+    // Handle Data after Fetching Products
+    const handleProductChange = async (selectedOption: any) => {
+        const selected = selectedOption ? selectedOption.value : '';
+        setProductName(selected);
+
+        if (selected) {
+            try {
+                const response = await fetch(`/api/PurchaseOrder/FetchProduct?ProductName=${encodeURIComponent(selected)}`);
+                if (response.ok) {
+                    const details = await response.json();
+                    console.log('Fetched Product Details:', details);
+                    setProductCostPrice(details.ProductCostPrice || '');
+                } else {
+                    console.error(`data not found: ${selected}`);
+                    resetFields();
+                }
+            } catch (error) {
+                console.error('Error fetching data details:', error);
+                resetFields();
+            }
+        } else {
+            resetFields();
+        }
+    };
+    
+    // Reset Fields When Close or Change Products on Select Option
+    const resetFields = () => {
+        setProductCostPrice('');
+    };
+
     return (
         <div className="flex flex-wrap -mx-4">
-            <input type="hidden" id="ReferenceNumber" value={ReferenceNumber} readOnly className="w-full px-3 py-2 border rounded text-xs" />
+            <input type="hidden" id="ReferenceNumber" value={ReferenceNumber} className="w-full px-3 py-2 border rounded text-xs" />
 
             {/* PO Number */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
@@ -127,23 +179,27 @@ const FormFields: React.FC<FormFieldsProps> = ({
             {/* Buyer Name */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Buyer Name</label>
-                <input type="text" value={BuyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                <input type="text" value={BuyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
             </div>
 
             {/* Supplier Name */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Supplier Name</label>
                 {editData ? (
-                    <input type="text" id="CompanyName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                    <input type="text" id="SupplierName" value={SupplierName} onChange={(e) => setSupplierName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
                 ) : (
-                    <Select id="CompanyName" options={CompanyOptions} onChange={handleCompanyChange} className="w-full text-xs" placeholder="Select Company" isClearable />
+                    <Select id="SupplierName" options={SupplierOptions} onChange={handleSupplierChange} className="w-full text-xs capitalize" placeholder="Select Company" isClearable />
                 )}
             </div>
 
             {/* Item / Product Name */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Item / Product Name</label>
-                <input type="text" value={ItemName} onChange={(e) => setItemName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                {editData ? (
+                    <input type="text" id="ProductName" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                ) : (
+                    <Select id="CompanyName" options={ProductOptions} onChange={handleProductChange} className="w-full text-xs capitalize" isClearable />
+                )}
             </div>
 
             {/* Quantity */}
@@ -155,7 +211,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
             {/* Unit Price*/}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Unit Price</label>
-                <input type="number" value={UnitPrice} onChange={(e) => setUnitPrice(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
+                <input type="number" value={ProductCostPrice} onChange={(e) => setProductCostPrice(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required />
             </div>
 
             {/* Payment Terms */}
@@ -210,7 +266,6 @@ const FormFields: React.FC<FormFieldsProps> = ({
                     ></textarea>
                 </div>
             )}
-
         </div>
     );
 };

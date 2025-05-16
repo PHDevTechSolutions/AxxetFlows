@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Select from 'react-select';
 
 interface FormFieldsProps {
     ReferenceNumber: string; setReferenceNumber: (value: string) => void;
@@ -14,7 +15,7 @@ interface FormFieldsProps {
     Status: string; setStatus: (value: string) => void;
     Remarks: string; setRemarks: (value: string) => void;
     Approver: string; setApprover: (value: string) => void;
-    
+
     editData?: any;
 }
 
@@ -32,24 +33,76 @@ const FormFields: React.FC<FormFieldsProps> = ({
     Status, setStatus,
     Remarks, setRemarks,
     Approver, setApprover,
-    
+
     editData,
 }) => {
+
+    const [productname, setproductname] = useState<{ id: string; ProductName: string; value: string; label: string }[]>([]);
 
     // Generate Reference Number only when not editing
     useEffect(() => {
         if (editData) {
             // Populate form fields for edit
-            setReferenceNumber(editData.ReferenceNumber || "");  
+            setReferenceNumber(editData.ReferenceNumber || "");
         } else {
             setReferenceNumber(generateReferenceNumber());
         }
     }, [editData]);
 
+    // Auto Generate Number
     const generateReferenceNumber = () => {
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
         const randomNumber = Math.floor(Math.random() * 1000);
         return `TRANSFER-ID-${randomString}-${randomNumber}`;
+    };
+
+    // Fetch Products
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/Transfer/FetchProduct');
+                const data = await response.json();
+                setproductname(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const ProductOptions = productname.map((product) => ({
+        value: product.ProductName,
+        label: product.ProductName,
+    }));
+
+    // Handle Data after Fetching Products
+    const handleProductChange = async (selectedOption: any) => {
+        const selected = selectedOption ? selectedOption.value : '';
+        setProductName(selected);
+
+        if (selected) {
+            try {
+                const response = await fetch(`/api/Transfer/FetchProduct?ProductName=${encodeURIComponent(selected)}`);
+                if (response.ok) {
+                    const details = await response.json();
+                    console.log('Fetched Product Details:', details);
+                    setProductSKU(details.ProductSKU || '');
+                } else {
+                    console.error(`data not found: ${selected}`);
+                    resetFields();
+                }
+            } catch (error) {
+                console.error('Error fetching data details:', error);
+                resetFields();
+            }
+        } else {
+            resetFields();
+        }
+    };
+
+    // Reset Fields When Close or Change Products on Select Option
+    const resetFields = () => {
+        setProductSKU('');
     };
 
     return (
@@ -90,18 +143,21 @@ const FormFields: React.FC<FormFieldsProps> = ({
                 </select>
             </div>
 
+            {/* Product Name */}
+            <div className="w-full sm:w-1/2 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Product Name</label>
+                {editData ? (
+                    <input type="text" id="ProductName" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                ) : (
+                    <Select id="CompanyName" options={ProductOptions} onChange={handleProductChange} className="w-full text-xs capitalize" isClearable />
+                )}
+            </div>
+
             {/* Item Code / SKU */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Item Code / SKU</label>
                 <input type="text" value={ProductSKU} onChange={(e) => setProductSKU(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
             </div>
-
-            {/* Product Name */}
-            <div className="w-full sm:w-1/2 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2">Product Name</label>
-                <input type="text" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
-            </div>
-
 
             {/* Quantity Transfer */}
             <div className="w-full sm:w-1/2 px-4 mb-4">

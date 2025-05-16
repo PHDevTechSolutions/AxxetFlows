@@ -10,9 +10,9 @@ interface Post {
   PODate: string;
   BuyerName: string;
   SupplierName: string;
-  ItemName: string;
+  ProductName: string;
   Quantity: string;
-  UnitPrice: string;
+  ProductCostPrice: string;
   TotalAmount: string;
   PaymentTerms: string;
   DeliveryAddress: string;
@@ -105,9 +105,9 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
       { header: "PO Date", key: "PODate", width: 15 },
       { header: "Buyer Name", key: "BuyerName", width: 20 },
       { header: "Supplier Name", key: "SupplierName", width: 20 },
-      { header: "Item Name", key: "ItemName", width: 20 },
+      { header: "Product Name", key: "ProductName", width: 20 },
       { header: "Quantity", key: "Quantity", width: 10 },
-      { header: "Unit Price", key: "UnitPrice", width: 15 },
+      { header: "Unit Price", key: "ProductCostPrice", width: 15 },
       { header: "Total Amount", key: "TotalAmount", width: 15 },
       { header: "Payment Terms", key: "PaymentTerms", width: 20 },
       { header: "Delivery Address", key: "DeliveryAddress", width: 25 },
@@ -122,10 +122,10 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
         PODate: post.PODate,
         BuyerName: post.BuyerName,
         SupplierName: post.SupplierName,
-        ItemName: post.ItemName,
+        ProductName: post.ProductName,
         Quantity: post.Quantity,
-        UnitPrice: parseFloat(post.UnitPrice).toFixed(2),
-        TotalAmount: computeTotalAmount(post.Quantity, post.UnitPrice),
+        ProductCostPrice: parseFloat(post.ProductCostPrice).toFixed(2),
+        TotalAmount: computeTotalAmount(post.Quantity, post.ProductCostPrice),
         PaymentTerms: post.PaymentTerms,
         DeliveryAddress: post.DeliveryAddress,
         DeliveryDate: post.DeliveryDate,
@@ -195,10 +195,10 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
                   <td className="px-3 py-6">{post.PODate}</td>
                   <td className="px-3 py-6 capitalize">{post.BuyerName}</td>
                   <td className="px-3 py-6 capitalize">{post.SupplierName}</td>
-                  <td className="px-3 py-6 capitalize">{post.ItemName}</td>
+                  <td className="px-3 py-6 capitalize">{post.ProductName}</td>
                   <td className="px-3 py-6">{post.Quantity}</td>
-                  <td className="px-3 py-6">{parseFloat(post.UnitPrice).toFixed(2)}</td>
-                  <td className="px-3 py-6">{computeTotalAmount(post.Quantity, post.UnitPrice)}</td>
+                  <td className="px-3 py-6">{parseFloat(post.ProductCostPrice).toFixed(2)}</td>
+                  <td className="px-3 py-6">{computeTotalAmount(post.Quantity, post.ProductCostPrice)}</td>
                   <td className="px-3 py-6">{post.PaymentTerms}</td>
                   <td className="px-3 py-6 capitalize">{post.DeliveryAddress}</td>
                   <td className="px-3 py-6">{post.DeliveryDate}</td>

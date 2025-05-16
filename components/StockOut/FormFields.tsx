@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Select from 'react-select';
 
 interface FormFieldsProps {
     ReferenceNumber: string; setReferenceNumber: (value: string) => void;
@@ -13,7 +14,7 @@ interface FormFieldsProps {
     ReferenceDocumentNumber: string; setReferenceDocumentNumber: (value: string) => void;
     Remarks: string; setRemarks: (value: string) => void;
     Status: string; setStatus: (value: string) => void;
-    
+
     editData?: any;
 }
 
@@ -33,20 +34,72 @@ const FormFields: React.FC<FormFieldsProps> = ({
     editData,
 }) => {
 
+    const [productname, setproductname] = useState<{ id: string; ProductName: string; value: string; label: string }[]>([]);
+
     // Generate Reference Number only when not editing
     useEffect(() => {
         if (editData) {
             // Populate form fields for edit
-            setReferenceNumber(editData.ReferenceNumber || "");  
+            setReferenceNumber(editData.ReferenceNumber || "");
         } else {
             setReferenceNumber(generateReferenceNumber());
         }
     }, [editData]);
 
+    // Auto Generate Reference Number
     const generateReferenceNumber = () => {
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
         const randomNumber = Math.floor(Math.random() * 1000);
         return `STOCKOUT-ID-${randomString}-${randomNumber}`;
+    };
+
+    // Fetch Products
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/StockOut/FetchProduct');
+                const data = await response.json();
+                setproductname(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const ProductOptions = productname.map((product) => ({
+        value: product.ProductName,
+        label: product.ProductName,
+    }));
+
+    // Handle Data after Fetching Products
+    const handleProductChange = async (selectedOption: any) => {
+        const selected = selectedOption ? selectedOption.value : '';
+        setProductName(selected);
+
+        if (selected) {
+            try {
+                const response = await fetch(`/api/StockOut/FetchProduct?ProductName=${encodeURIComponent(selected)}`);
+                if (response.ok) {
+                    const details = await response.json();
+                    console.log('Fetched Product Details:', details);
+                    setProductSKU(details.ProductSKU || '');
+                } else {
+                    console.error(`data not found: ${selected}`);
+                    resetFields();
+                }
+            } catch (error) {
+                console.error('Error fetching data details:', error);
+                resetFields();
+            }
+        } else {
+            resetFields();
+        }
+    };
+    
+    // Reset Fields When Close or Change Products on Select Option
+    const resetFields = () => {
+        setProductSKU('');
     };
 
     return (
@@ -68,7 +121,13 @@ const FormFields: React.FC<FormFieldsProps> = ({
             {/* Recipient / Department */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Recipient / Department</label>
-                <input type="text" value={Recipient} onChange={(e) => setRecipient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                <select value={Recipient} onChange={(e) => setRecipient(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" required>
+                    <option value="">Select Status</option>
+                    <option value="Warehouse">Warehouse</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Marketing">Marketing</option>
+                </select>
             </div>
 
             {/* Purpose / Reason for Issuance */}
@@ -77,18 +136,21 @@ const FormFields: React.FC<FormFieldsProps> = ({
                 <textarea value={Purpose} onChange={(e) => setPurpose(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" rows={3}></textarea>
             </div>
 
+            {/* Product Name */}
+            <div className="w-full sm:w-1/2 px-4 mb-4">
+                <label className="block text-xs font-bold mb-2">Product Name</label>
+                {editData ? (
+                    <input type="text" id="ProductName" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs" placeholder="Enter Company Name" />
+                ) : (
+                    <Select id="CompanyName" options={ProductOptions} onChange={handleProductChange} className="w-full text-xs capitalize" isClearable />
+                )}
+            </div>
+
             {/* Item Code / SKU */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Item Code / SKU</label>
                 <input type="text" value={ProductSKU} onChange={(e) => setProductSKU(e.target.value)} className="w-full px-3 py-2 border rounded text-xs uppercase" required />
             </div>
-
-            {/* Product Name */}
-            <div className="w-full sm:w-1/2 px-4 mb-4">
-                <label className="block text-xs font-bold mb-2">Product Name</label>
-                <input type="text" value={ProductName} onChange={(e) => setProductName(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
-            </div>
-
 
             {/* Quantity Received */}
             <div className="w-full sm:w-1/2 px-4 mb-4">

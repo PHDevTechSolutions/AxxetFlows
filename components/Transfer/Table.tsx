@@ -141,7 +141,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete, Role }) 
                     <thead className="bg-gray-100 text-gray-700">
                         <tr>
                             {[
-                                "Stock Out ID", "Date Issuance", "Requested By", "From", "To", "SKU", "Product Name",
+                                "Transfer ID", "Date Issuance", "Requested By", "From", "To", "SKU", "Product Name",
                                 "Quantity", "Unit of Measure", "Reason For Transfer", "Remarks", "Status", "Approver", "Actions"
                             ].map((header) => (
                                 <th key={header} className="px-3 py-6 text-left whitespace-nowrap">{header}</th>

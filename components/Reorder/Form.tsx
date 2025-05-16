@@ -15,7 +15,7 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
   const [ReferenceNumber, setReferenceNumber] = useState(editData?.ReferenceNumber || "");
   const [ProductSKU, setProductSKU] = useState(editData?.ProductSKU || "");
   const [ProductName, setProductName] = useState(editData?.ProductName || "");
-  const [CurrentStock, setCurrentStock] = useState(editData?.CurrentStock || "");
+  const [ProductQuantity, setProductQuantity] = useState(editData?.ProductQuantity || "");
   const [ReorderLevel, setReorderLevel] = useState(editData?.ReorderLevel || "");
   const [SupplierName, setSupplierName] = useState(editData?.SupplierName || "");
   const [LastOrderDate, setLastOrderDate] = useState(editData?.LastOrderDate || "");
@@ -36,7 +36,7 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ReferenceNumber, ProductSKU, ProductName, CurrentStock, ReorderLevel, 
+        ReferenceNumber, ProductSKU, ProductName, ProductQuantity, ReorderLevel, 
         SupplierName, LastOrderDate, LeadTime, ReorderQTY, Status, id: editData?._id,
       }),
     });
@@ -64,7 +64,7 @@ const Form: React.FC<FormProps> = ({ onCancel, refreshPosts, editData }) => {
           ReferenceNumber={ReferenceNumber} setReferenceNumber={setReferenceNumber}
           ProductSKU={ProductSKU} setProductSKU={setProductSKU}
           ProductName={ProductName} setProductName={setProductName}
-          CurrentStock={CurrentStock} setCurrentStock={setCurrentStock}
+          ProductQuantity={ProductQuantity} setProductQuantity={setProductQuantity}
           ReorderLevel={ReorderLevel} setReorderLevel={setReorderLevel}
           SupplierName={SupplierName} setSupplierName={setSupplierName}
           LastOrderDate={LastOrderDate} setLastOrderDate={setLastOrderDate}
