@@ -95,7 +95,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
                                     <td className="px-3 py-6">{post.ReferenceNumber}</td>
                                     <td className="px-3 py-6">{post.ProductSKU}</td>
                                     <td className="px-3 py-6">
-                                        <img src={post.ProductImage} alt={post.ProductName} className="w-12 h-12 object-cover rounded" />
+                                        <img src={post?.ProductImage || "/default.png"} alt={post?.ProductName || "Product Image"} className="w-12 h-12 object-cover rounded" />
                                     </td>
                                     <td className="px-3 py-6">{post.ProductName}</td>
                                     <td className="px-3 py-6">{shortDesc(post.ProductDescription)}</td>
@@ -128,7 +128,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-xs">
                     {paginatedPosts.map((post) => (
                         <div key={post._id} className="bg-white rounded shadow hover:shadow-md p-3 cursor-pointer" onClick={() => onRowClick(post)}>
-                            <img src={post.ProductImage} alt={post.ProductName} className="w-full h-auto object-cover rounded" />
+                            <img src={post?.ProductImage || "/default.png"} alt={post?.ProductName || "Product Image"} className="w-full h-auto object-cover rounded" />
                             <div className="mt-2">
                                 <h3 className="font-bold text-sm mb-1 capitalize">{post.ProductName}</h3>
                                 <p className="capitalize">{shortDesc(post.ProductDescription)}</p>
@@ -144,7 +144,7 @@ const Table: React.FC<TableProps> = ({ posts, handleEdit, handleDelete }) => {
                 <div className="flex flex-col gap-4 text-xs">
                     {paginatedPosts.map((post) => (
                         <div key={post._id} className="bg-white rounded-lg shadow-md overflow-hidden md:flex cursor-pointer" onClick={() => onRowClick(post)}>
-                            <img src={post.ProductImage} alt={post.ProductName} className="w-full md:w-48 h-48 object-cover" />
+                            <img src={post?.ProductImage || "/default.png"} alt={post?.ProductName || "Product Image"} className="w-full md:w-48 h-48 object-cover" />
                             <div className="p-4 flex-1">
                                 <h3 className="font-bold text-sm mb-1 capitalize">{post.ProductName}</h3>
                                 <p className="mb-2 text-gray-700 capitalize">{post.ProductDescription}</p>

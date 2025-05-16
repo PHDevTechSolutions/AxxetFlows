@@ -1,12 +1,12 @@
 import { MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
-// Ensure the MONGODB_URI environment variable is defined
-if (!process.env.MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+// Ensure the INV_URI environment variable is defined
+if (!process.env.INV_URI) {
+  throw new Error("Please define the INV_URI environment variable");
 }
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.INV_URI;
 let client: MongoClient | null = null;
 let clientPromise: Promise<MongoClient>;
 

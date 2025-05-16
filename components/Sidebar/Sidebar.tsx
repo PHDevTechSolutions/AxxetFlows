@@ -92,21 +92,21 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       title: "Transfers",
       icon: FaExchangeAlt,
       subItems: [
-        { title: "Branches", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "List of Item Transfers", href: `/Transfer/TransferItem${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
       title: "Reorder Alerts",
       icon: FaExclamationTriangle,
       subItems: [
-        { title: "Reorder Items", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Reorder Items", href: `/Reorder/ReorderItems${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
       title: "Reports",
       icon: FaChartBar,
       subItems: [
-        { title: "Inventory and Sales Reports", href: `/Report/ReportFound${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
+        { title: "Inventory and Sales Reports", href: `/Report/InventoryReport${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
       ],
     },
     {
@@ -229,6 +229,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
 
   return (
     <div className="relative">
+
       {/* Sidebar Overlay */}
       <div
         className={`fixed inset-y-0 left-0 z-50 h-screen bg-[#F1F5F9] text-[#334155] border-1  transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"
@@ -258,7 +259,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
         <div className="flex flex-col items-center rounded-md flex-grow overflow-y-auto text-xs p-2">
           <div className="w-full">
             {userDetails.Role !== "Subscribers" && (
-              <Link href={`/dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-green-700 rounded hover: rounded-md hover:text-white transition-all">
+              <Link href={`/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ''}`} className="flex w-full p-4 text-white mb-1 bg-green-700 rounded hover: rounded-md hover:text-white transition-all">
                 <FaTachometerAlt size={15} className="mr-1" />Dashboard
               </Link>
             )}
@@ -302,6 +303,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
           ))}
         </div>
       </div>
+
     </div>
   );
 };
