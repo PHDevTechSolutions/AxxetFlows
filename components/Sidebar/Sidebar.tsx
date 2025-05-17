@@ -103,13 +103,6 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
       ],
     },
     {
-      title: "Reports",
-      icon: FaChartBar,
-      subItems: [
-        { title: "Inventory and Sales Reports", href: `/Report/InventoryReport${userId ? `?id=${encodeURIComponent(userId)}` : ""}`, },
-      ],
-    },
-    {
       title: "Categories",
       icon: FaTags,
       subItems: [

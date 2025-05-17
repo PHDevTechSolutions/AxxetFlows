@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 
 const Login: React.FC = () => {
   const [Email, setEmail] = useState("");
@@ -50,9 +51,9 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white bg-center relative p-4">
-      <div className="absolute inset-0 bg-gray-100 shadow-lg"></div>
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/wallpaper.png')" }}></div>
       <ToastContainer className="text-xs" />
-      <div className="relative z-10 w-full max-w-md p-8 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg shadow-xl text-center text-black">
+      <div className="relative z-10 w-full max-w-md p-8 bg-white bg-opacity-90 backdrop-blur-lg rounded-lg shadow-xl text-center text-black">
         <form onSubmit={handleSubmit} className="text-left">
           <div className="mb-4">
             <label className="block text-xs font-medium mb-1">Email</label>
