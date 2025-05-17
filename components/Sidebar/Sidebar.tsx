@@ -238,7 +238,7 @@ const Sidebar: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, o
         {/* Logo Section */}
         <div className="flex items-center justify-between p-4 w-full">
           <div className="flex items-center">
-            <img src="/assetflow.png" alt="Logo" className="w-full h-16" />
+            <img src="/assetflow.png" alt="Logo" className="w-full h-12" />
             <Link href={`/Dashboard${userId ? `?id=${encodeURIComponent(userId)}` : ""}`}>
               {/* Link content here */}
             </Link>

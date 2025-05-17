@@ -191,7 +191,7 @@ const FormFields: React.FC<FormFieldsProps> = ({
             {/* Lead Time */}
             <div className="w-full sm:w-1/2 px-4 mb-4">
                 <label className="block text-xs font-bold mb-2">Lead Time</label>
-                <input type="text" value={LeadTime} onChange={(e) => setLeadTime(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
+                <input type="date" value={LeadTime} onChange={(e) => setLeadTime(e.target.value)} className="w-full px-3 py-2 border rounded text-xs capitalize" required />
             </div>
 
             {/* Suggested Reorder QTY */}

@@ -5,6 +5,8 @@ import ParentLayout from '../../components/Layouts/ParentLayout';
 import SessionChecker from '../../components/Session/SessionChecker';
 import UserFetcher from '../../components/UserFetcher/UserFetcher';
 
+import { FcLineChart, FcPackage, FcInTransit, FcClock, FcAlarmClock, FcAdvertising, FcDown, FcRefresh, FcNeutralTrading } from "react-icons/fc";
+
 type ReceivedData = {
   PONumber: string;
   ProductSKU: string;
@@ -28,6 +30,23 @@ type TransferData = {
   UnitMeasure: string;
   DateTransfer: string;
 };
+
+type SupplierData = {
+  Status: string;
+}
+
+type PurchaseOrder = {
+  Status: string;
+}
+
+type Reorder = {
+  ReferenceNumber: string;
+  ProductSKU: string;
+  ProductName: string;
+  SupplierName: string;
+  LastOrderDate: string;
+  LeadTime: string;
+}
 
 const ITEMS_PER_PAGE = 5;
 
@@ -53,6 +72,10 @@ const DashboardPage: React.FC = () => {
   const [transferPage, setTransferPage] = useState(1);
 
   const [activeTab, setActiveTab] = useState("received");
+
+  const [activeSuppliers, setActiveSuppliers] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [delayedOrders, setDelayedOrders] = useState<Reorder[]>([]);
 
   // Fetch Count Stocks
   useEffect(() => {
@@ -123,7 +146,6 @@ const DashboardPage: React.FC = () => {
 
     fetchReorderData();
   }, []);
-
 
   // Maximum height of the chart container in pixels (h-48 = 12rem = 192px)
   const maxHeightPx = 192;
@@ -208,6 +230,48 @@ const DashboardPage: React.FC = () => {
   };
 
   const isLoading = false; // Toggle to true while fetching data
+  
+  // Fetch Suppliers, PurchaseOrders, Reorders Data
+  useEffect(() => {
+    // Fetch suppliers
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch('/api/Supplier/FetchData');
+        const data = await response.json();
+        const activeCount = data.filter((item: any) => item.Status === 'Active').length;
+        setActiveSuppliers(activeCount);
+      } catch (error) {
+        console.error('Error fetching suppliers:', error);
+      }
+    };
+
+    // Fetch purchase orders
+    const fetchPurchaseOrders = async () => {
+      try {
+        const response = await fetch('/api/PurchaseOrder/FetchData');
+        const data = await response.json();
+        const pendingCount = data.filter((item: any) => item.DeliveryStatus === 'Pending').length;
+        setPendingOrders(pendingCount);
+      } catch (error) {
+        console.error('Error fetching purchase orders:', error);
+      }
+    };
+
+    // Fetch reorder data
+    const fetchReorder = async () => {
+      try {
+        const response = await fetch('/api/Reorder/FetchData');
+        const data: Reorder[] = await response.json();
+        setDelayedOrders(data);
+      } catch (error) {
+        console.error('Error fetching reorder data:', error);
+      }
+    };
+
+    fetchSuppliers();
+    fetchPurchaseOrders();
+    fetchReorder();
+  }, []);
 
   return (
     <SessionChecker>
@@ -217,27 +281,27 @@ const DashboardPage: React.FC = () => {
             <div className="container mx-auto p-4">
               {/* Inventory Summary */}
               <div className="mb-4">
-                <h3 className="text-md font-semibold mb-6">📊 Inventory Summary</h3>
+                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcPackage size={20} /> Inventory Summary</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                  <div className="bg-white shadow-md rounded-md p-4">
-                    <h4 className="text-xs text-gray-500">Total Items in Stock</h4>
-                    <p className="text-3xl font-bold text-green-600">{totalItemsCount}</p>
+                  <div className="bg-green-50 p-6 rounded-lg shadow-md">
+                    <h4 className="text-sm font-semibold text-gray-500">Total Items in Stock</h4>
+                    <p className="text-3xl font-bold text-green-500">{totalItemsCount}</p>
                   </div>
 
-                  <div className="bg-white shadow-md rounded-md p-4">
-                    <h4 className="text-xs text-gray-500">Low-Stock Items</h4>
+                  <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
+                    <h4 className="text-sm font-semibold text-gray-500">Low-Stock Items</h4>
                     <p className="text-3xl font-bold text-yellow-500">{lowStockCount}</p>
                   </div>
 
-                  <div className="bg-white shadow-md rounded-md p-4">
-                    <h4 className="text-xs text-gray-500">Out-of-Stock Items</h4>
+                  <div className="bg-red-50 p-6 rounded-lg shadow-md">
+                    <h4 className="text-sm font-semibold text-gray-500">Out-of-Stock Items</h4>
                     <p className="text-3xl font-bold text-red-500">{outOfStockCount}</p>
                   </div>
                 </div>
 
                 {/* Bar Chart */}
                 <div>
-                  <h4 className="text-md font-semibold mb-4">📉 Stock Overview Chart</h4>
+                  <h4 className="text-md font-semibold mb-4 flex gap-1"><FcLineChart size={20}/> Stock Overview Chart</h4>
                   <div className="flex items-end justify-center space-x-8 h-auto shadow-md rounded-md p-4">
                     {/* Total */}
                     <div className="flex flex-col items-center justify-end">
@@ -277,7 +341,7 @@ const DashboardPage: React.FC = () => {
 
               {/* Reorder Alert Summary */}
               <div className="mb-4">
-                <h3 className="text-md font-semibold mb-6">🔔 Reorder Alert Summary</h3>
+                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcAdvertising size={20} /> Reorder Alert Summary</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Card: Total Reorder Level */}
                   <div className="bg-white shadow-md rounded-md p-6 flex flex-col justify-center items-center">
@@ -320,7 +384,7 @@ const DashboardPage: React.FC = () => {
 
               {/* Latest Transactions Summary */}
               <div className="mt-12">
-                <h3 className="text-md font-semibold mb-6">🕒 Latest Transactions Summary</h3>
+                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcAlarmClock size={20} /> Latest Transactions Summary</h3>
                 {/* Responsive Tabs with Icons, Badges & Mobile-Friendly Layout */}
                 <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4 text-sm">
                   <button
@@ -328,7 +392,7 @@ const DashboardPage: React.FC = () => {
                     className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "received" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
                       }`}
                   >
-                    📥 <span className="hidden sm:inline">Received</span>
+                    <FcDown size={20} /> <span className="hidden sm:inline">Received</span>
                     <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
                       {receivedData.length}
                     </span>
@@ -339,7 +403,7 @@ const DashboardPage: React.FC = () => {
                     className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "stockout" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600"
                       }`}
                   >
-                    📦 <span className="hidden sm:inline">Stock-Out</span>
+                    <FcNeutralTrading size={20} /> <span className="hidden sm:inline">Stock-Out</span>
                     <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                       {stockOutData.length}
                     </span>
@@ -350,13 +414,12 @@ const DashboardPage: React.FC = () => {
                     className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "transfer" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
                       }`}
                   >
-                    🔄 <span className="hidden sm:inline">Transfer</span>
+                    <FcRefresh size={20} /><span className="hidden sm:inline">Transfer</span>
                     <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
                       {transferData.length}
                     </span>
                   </button>
                 </div>
-
 
                 {/* Tab Panels */}
                 <div key={activeTab} className="bg-white shadow-md rounded-md p-2 overflow-x-auto animate-fade-in transition-all duration-300 ease-in-out">
@@ -407,8 +470,8 @@ const DashboardPage: React.FC = () => {
                             <thead className="bg-gray-100 text-gray-700">
                               <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
                                 <th className='px-3 py-6'>Stock-Out ID</th>
-                                <th className='px-3 py-6'>ProductName</th>
                                 <th className='px-3 py-6'>SKU</th>
+                                <th className='px-3 py-6'>ProductName</th>
                                 <th className='px-3 py-6'>ProductQuantity</th>
                                 <th className='px-3 py-6'>Date Issuance</th>
                               </tr>
@@ -417,8 +480,8 @@ const DashboardPage: React.FC = () => {
                               {paginate(stockOutData, stockOutPage).map((item, idx) => (
                                 <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
                                   <td className='px-3 py-6 uppercase'>{item.ReferenceNumber}</td>
-                                  <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
                                   <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
+                                  <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
                                   <td className='px-3 py-6'>{item.ProductQuantity}</td>
                                   <td className='px-3 py-6'>{item.DateIssuance}</td>
                                 </tr>
@@ -441,19 +504,21 @@ const DashboardPage: React.FC = () => {
                           <table className="w-full bg-white text-xs">
                             <thead className="bg-gray-100 text-gray-700">
                               <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                                <th className='px-3 py-6'>SKU</th>
                                 <th className='px-3 py-6'>Product Name</th>
                                 <th className='px-3 py-6'>Product Quantity</th>
-                                <th className='px-3 py-6'>SKU</th>
                                 <th className='px-3 py-6'>Unit Measure</th>
+                                <th className='px-3 py-6'>Date Transfer</th>
                               </tr>
                             </thead>
                             <tbody>
                               {paginate(transferData, transferPage).map((item, idx) => (
                                 <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50 whitespace-nowrap">
+                                  <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
                                   <td className='px-3 py-6 capitalize'>{item.ProductName}</td>
                                   <td className='px-3 py-6'>{item.ProductQuantity}</td>
-                                  <td className='px-3 py-6 uppercase'>{item.ProductSKU}</td>
                                   <td className='px-3 py-6'>{item.UnitMeasure}</td>
+                                  <td className='px-3 py-6'>{item.DateTransfer}</td>
                                 </tr>
                               ))}
                               {transferData.length === 0 && (
@@ -474,6 +539,90 @@ const DashboardPage: React.FC = () => {
 
               </div>
 
+              {/* Supplier Overview */}
+              <div className="mt-12">
+                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcInTransit size={20} />Supplier Overview</h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-green-50 p-6 rounded-lg shadow-md">
+                    <h3 className="text-green-700 font-semibold mb-2">🟢 Active Suppliers</h3>
+                    <p className="text-3xl font-bold">{activeSuppliers}</p>
+                  </div>
+
+                  <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
+                    <h3 className="text-yellow-700 font-semibold mb-2">🟡 Pending Purchase Orders</h3>
+                    <p className="text-3xl font-bold">{pendingOrders}</p>
+                  </div>
+                </div>
+
+                {/* Custom Progress Tracker */}
+                <div className="bg-white rounded-2xl shadow mt-12 p-6 w-full">
+                  <h2 className="text-md font-semibold mb-4 flex gap-1"><FcClock size={20} />Order Lead Time Tracker</h2>
+                  <div className="space-y-6">
+                    {delayedOrders.length === 0 ? (
+                      <p className="text-center text-gray-500">No orders to track.</p>
+                    ) : (
+                      delayedOrders.map((item, index) => {
+                        const now = new Date();
+                        const lastOrder = new Date(item.LastOrderDate);
+                        const leadTime = new Date(item.LeadTime);
+
+                        const totalHours = (leadTime.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
+                        const elapsedHours = (now.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
+
+                        // If totalHours <= 0 (invalid), set progress to 100 to avoid NaN
+                        const progress = totalHours > 0 ? Math.min((elapsedHours / totalHours) * 100, 100) : 100;
+                        const isDelayed = now > leadTime;
+
+                        const hoursDiff = (leadTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+                        const timeStatus = isDelayed
+                          ? `${Math.abs(Math.round(hoursDiff))} hours overdue`
+                          : `${Math.round(hoursDiff)} hours left`;
+
+                        return (
+                          <div key={index} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <div>
+                                <p className="font-semibold text-xs text-gray-70 capitalize">
+                                  {item.ProductName} <span className="uppercase">({item.ProductSKU})</span>
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Ref: {item.ReferenceNumber} • Supplier: {item.SupplierName}
+                                </p>
+                              </div>
+                              <div>
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium ${isDelayed ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                                    }`}
+                                >
+                                  {isDelayed ? 'Delayed' : 'On Track'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="w-full bg-gray-200 rounded-full h-4">
+                              <div
+                                className={`h-4 rounded-full ${isDelayed ? 'bg-red-500' : 'bg-blue-500'}`}
+                                style={{ width: `${progress}%` }}
+                              ></div>
+                            </div>
+
+                            <div className="flex justify-between text-xs text-gray-500 mt-1">
+                              <span>Last Order: {new Date(item.LastOrderDate).toLocaleString()}</span>
+                              <span>Lead Time: {new Date(item.LeadTime).toLocaleString()}</span>
+                              <span>Now: {now.toLocaleString()}</span>
+                            </div>
+
+                            <div className={`mt-2 text-xs font-semibold ${isDelayed ? 'text-red-600' : 'text-blue-600'}`}>
+                              {timeStatus}
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </UserFetcher>
