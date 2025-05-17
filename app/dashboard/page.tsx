@@ -51,6 +51,10 @@ type Reorder = {
 const ITEMS_PER_PAGE = 5;
 
 const DashboardPage: React.FC = () => {
+  const [userDetails, setUserDetails] = useState({ UserId: "", Firstname: "", Lastname: "", Email: "", Role: "", Location: "", });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [totalItemsCount, setTotalItemsCount] = useState(0);
   const [lowStockCount, setLowStockCount] = useState(0);
   const [outOfStockCount, setOutOfStockCount] = useState(0);
@@ -76,6 +80,39 @@ const DashboardPage: React.FC = () => {
   const [activeSuppliers, setActiveSuppliers] = useState(0);
   const [pendingOrders, setPendingOrders] = useState(0);
   const [delayedOrders, setDelayedOrders] = useState<Reorder[]>([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("id");
+
+      if (userId) {
+        try {
+          const response = await fetch(`/api/user?id=${encodeURIComponent(userId)}`);
+          if (!response.ok) throw new Error("Failed to fetch user data");
+          const data = await response.json();
+          setUserDetails({
+            UserId: data._id,
+            Firstname: data.Firstname || "",
+            Lastname: data.Lastname || "",
+            Email: data.Email || "",
+            Role: data.Role || "",
+            Location: data.Location || "",
+          });
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError("Failed to load user data.");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setError("User ID is missing.");
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Fetch Count Stocks
   useEffect(() => {
@@ -230,7 +267,7 @@ const DashboardPage: React.FC = () => {
   };
 
   const isLoading = false; // Toggle to true while fetching data
-  
+
   // Fetch Suppliers, PurchaseOrders, Reorders Data
   useEffect(() => {
     // Fetch suppliers
@@ -280,6 +317,7 @@ const DashboardPage: React.FC = () => {
           {(user) => (
             <div className="container mx-auto p-4">
               {/* Inventory Summary */}
+              {(user && user.Role !== "Purchasing Officer" && user.Role !== "Auditor") && (
               <div className="mb-4">
                 <h3 className="text-md font-semibold mb-6 flex gap-1"><FcPackage size={20} /> Inventory Summary</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
@@ -301,7 +339,7 @@ const DashboardPage: React.FC = () => {
 
                 {/* Bar Chart */}
                 <div>
-                  <h4 className="text-md font-semibold mb-4 flex gap-1"><FcLineChart size={20}/> Stock Overview Chart</h4>
+                  <h4 className="text-md font-semibold mb-4 flex gap-1"><FcLineChart size={20} /> Stock Overview Chart</h4>
                   <div className="flex items-end justify-center space-x-8 h-auto shadow-md rounded-md p-4">
                     {/* Total */}
                     <div className="flex flex-col items-center justify-end">
@@ -338,65 +376,72 @@ const DashboardPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+              )}
 
               {/* Reorder Alert Summary */}
-              <div className="mb-4">
-                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcAdvertising size={20} /> Reorder Alert Summary</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Card: Total Reorder Level */}
-                  <div className="bg-white shadow-md rounded-md p-6 flex flex-col justify-center items-center">
-                    <h4 className="text-xl font-semibold mb-2">Total Reorder Level</h4>
-                    <p className="text-4xl font-bold text-blue-600">{totalReorderLevel}</p>
-                  </div>
+              {(user && user.Role !== "Sales Staff" && user.Role !== "Warehouse Staff" && user.Role !== "Auditor") && (
+                <div className="mb-4">
+                  <h3 className="text-md font-semibold mb-6 flex gap-1"><FcAdvertising size={20} /> Reorder Alert Summary</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Left Card: Total Reorder Level */}
+                    <div className="bg-white shadow-md rounded-md p-6 flex flex-col justify-center items-center">
+                      <h4 className="text-xl font-semibold mb-2">Total Reorder Level</h4>
+                      <p className="text-4xl font-bold text-blue-600">{totalReorderLevel}</p>
+                    </div>
 
-                  {/* Right Card: Top 5 Reorder Items Table */}
-                  <div className="bg-white shadow-md rounded-md p-2 overflow-x-auto">
-                    <h4 className="text-md font-semibold mb-4">Top 5 Products by Reorder Level</h4>
-                    <table className="w-full bg-white text-xs">
-                      <thead className="bg-gray-100 text-gray-700">
-                        <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
-                          <th className='px-3 py-6'>SKU</th>
-                          <th className='px-3 py-6'>Product Name</th>
-                          <th className='px-3 py-6'>Reorder Level</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {topReorderItems.length > 0 ? (
-                          topReorderItems.map((item, idx) => (
-                            <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50">
-                              <td className="px-3 py-6 text-sm text-gray-800 uppercase">{item.ProductSKU}</td>
-                              <td className="px-3 py-6 text-sm text-gray-800 capitalize">{item.ProductName}</td>
-                              <td className="px-3 py-6 text-sm font-semibold text-blue-600">{item.ReorderLevel}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={3} className="py-4 text-center text-gray-500">
-                              No data available
-                            </td>
+                    {/* Right Card: Top 5 Reorder Items Table */}
+                    <div className="bg-white shadow-md rounded-md p-2 overflow-x-auto">
+                      <h4 className="text-md font-semibold mb-4">Top 5 Products by Reorder Level</h4>
+                      <table className="w-full bg-white text-xs">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr className="border-b border-gray-300 px-3 py-6 text-left whitespace-nowrap">
+                            <th className='px-3 py-6'>SKU</th>
+                            <th className='px-3 py-6'>Product Name</th>
+                            <th className='px-3 py-6'>Reorder Level</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {topReorderItems.length > 0 ? (
+                            topReorderItems.map((item, idx) => (
+                              <tr key={idx} className="text-left border-b capitalize cursor-pointer hover:bg-gray-50">
+                                <td className="px-3 py-6 text-sm text-gray-800 uppercase">{item.ProductSKU}</td>
+                                <td className="px-3 py-6 text-sm text-gray-800 capitalize">{item.ProductName}</td>
+                                <td className="px-3 py-6 text-sm font-semibold text-blue-600">{item.ReorderLevel}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={3} className="py-4 text-center text-gray-500">
+                                No data available
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Latest Transactions Summary */}
+              {(user && user.Role !== "Purchasing Officer" && user.Role !== "Support Staff" && user.Role !== "Auditor") && (
               <div className="mt-12">
                 <h3 className="text-md font-semibold mb-6 flex gap-1"><FcAlarmClock size={20} /> Latest Transactions Summary</h3>
                 {/* Responsive Tabs with Icons, Badges & Mobile-Friendly Layout */}
                 <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 mb-4 text-sm">
-                  <button
-                    onClick={() => setActiveTab("received")}
-                    className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "received" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
-                      }`}
-                  >
-                    <FcDown size={20} /> <span className="hidden sm:inline">Received</span>
-                    <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {receivedData.length}
-                    </span>
-                  </button>
+
+                  {(user && user.Role !== "Sales Staff" && user.Role !== "Warehouse Staff") && (
+                    <button
+                      onClick={() => setActiveTab("received")}
+                      className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "received" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"
+                        }`}
+                    >
+                      <FcDown size={20} /> <span className="hidden sm:inline">Received</span>
+                      <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {receivedData.length}
+                      </span>
+                    </button>
+                  )}
 
                   <button
                     onClick={() => setActiveTab("stockout")}
@@ -409,16 +454,18 @@ const DashboardPage: React.FC = () => {
                     </span>
                   </button>
 
-                  <button
-                    onClick={() => setActiveTab("transfer")}
-                    className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "transfer" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-                      }`}
-                  >
-                    <FcRefresh size={20} /><span className="hidden sm:inline">Transfer</span>
-                    <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
-                      {transferData.length}
-                    </span>
-                  </button>
+                  {(user && user.Role !== "Sales Staff" && user.Role !== "Warehouse Staff") && (
+                    <button
+                      onClick={() => setActiveTab("transfer")}
+                      className={`flex items-center justify-between sm:justify-center gap-2 px-4 py-2 rounded-md transition duration-300 ${activeTab === "transfer" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
+                        }`}
+                    >
+                      <FcRefresh size={20} /><span className="hidden sm:inline">Transfer</span>
+                      <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {transferData.length}
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Tab Panels */}
@@ -538,91 +585,94 @@ const DashboardPage: React.FC = () => {
                 </div>
 
               </div>
+              )}
 
               {/* Supplier Overview */}
-              <div className="mt-12">
-                <h3 className="text-md font-semibold mb-6 flex gap-1"><FcInTransit size={20} />Supplier Overview</h3>
+              {(user && user.Role !== "Inventory Manager" && user.Role !== "Sales Staff" && user.Role !== "Warehouse Staff" && user.Role !== "Support Staff" && user.Role !== "Auditor") && (
+                <div className="mt-12">
+                  <h3 className="text-md font-semibold mb-6 flex gap-1"><FcInTransit size={20} />Supplier Overview</h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-green-50 p-6 rounded-lg shadow-md">
-                    <h3 className="text-green-700 font-semibold mb-2">🟢 Active Suppliers</h3>
-                    <p className="text-3xl font-bold">{activeSuppliers}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-green-50 p-6 rounded-lg shadow-md">
+                      <h3 className="text-green-700 font-semibold mb-2">🟢 Active Suppliers</h3>
+                      <p className="text-3xl font-bold">{activeSuppliers}</p>
+                    </div>
+
+                    <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
+                      <h3 className="text-yellow-700 font-semibold mb-2">🟡 Pending Purchase Orders</h3>
+                      <p className="text-3xl font-bold">{pendingOrders}</p>
+                    </div>
                   </div>
 
-                  <div className="bg-yellow-50 p-6 rounded-lg shadow-md">
-                    <h3 className="text-yellow-700 font-semibold mb-2">🟡 Pending Purchase Orders</h3>
-                    <p className="text-3xl font-bold">{pendingOrders}</p>
+                  {/* Custom Progress Tracker */}
+                  <div className="bg-white rounded-2xl shadow mt-12 p-6 w-full">
+                    <h2 className="text-md font-semibold mb-4 flex gap-1"><FcClock size={20} />Order Lead Time Tracker</h2>
+                    <div className="space-y-6">
+                      {delayedOrders.length === 0 ? (
+                        <p className="text-center text-gray-500">No orders to track.</p>
+                      ) : (
+                        delayedOrders.map((item, index) => {
+                          const now = new Date();
+                          const lastOrder = new Date(item.LastOrderDate);
+                          const leadTime = new Date(item.LeadTime);
+
+                          const totalHours = (leadTime.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
+                          const elapsedHours = (now.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
+
+                          // If totalHours <= 0 (invalid), set progress to 100 to avoid NaN
+                          const progress = totalHours > 0 ? Math.min((elapsedHours / totalHours) * 100, 100) : 100;
+                          const isDelayed = now > leadTime;
+
+                          const hoursDiff = (leadTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+                          const timeStatus = isDelayed
+                            ? `${Math.abs(Math.round(hoursDiff))} hours overdue`
+                            : `${Math.round(hoursDiff)} hours left`;
+
+                          return (
+                            <div key={index} className="border border-gray-200 rounded-lg p-4">
+                              <div className="flex justify-between items-center mb-2">
+                                <div>
+                                  <p className="font-semibold text-xs text-gray-70 capitalize">
+                                    {item.ProductName} <span className="uppercase">({item.ProductSKU})</span>
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Ref: {item.ReferenceNumber} • Supplier: {item.SupplierName}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span
+                                    className={`px-3 py-1 rounded-full text-xs font-medium ${isDelayed ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                                      }`}
+                                  >
+                                    {isDelayed ? 'Delayed' : 'On Track'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="w-full bg-gray-200 rounded-full h-4">
+                                <div
+                                  className={`h-4 rounded-full ${isDelayed ? 'bg-red-500' : 'bg-blue-500'}`}
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+
+                              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Last Order: {new Date(item.LastOrderDate).toLocaleString()}</span>
+                                <span>Lead Time: {new Date(item.LeadTime).toLocaleString()}</span>
+                                <span>Now: {now.toLocaleString()}</span>
+                              </div>
+
+                              <div className={`mt-2 text-xs font-semibold ${isDelayed ? 'text-red-600' : 'text-blue-600'}`}>
+                                {timeStatus}
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* Custom Progress Tracker */}
-                <div className="bg-white rounded-2xl shadow mt-12 p-6 w-full">
-                  <h2 className="text-md font-semibold mb-4 flex gap-1"><FcClock size={20} />Order Lead Time Tracker</h2>
-                  <div className="space-y-6">
-                    {delayedOrders.length === 0 ? (
-                      <p className="text-center text-gray-500">No orders to track.</p>
-                    ) : (
-                      delayedOrders.map((item, index) => {
-                        const now = new Date();
-                        const lastOrder = new Date(item.LastOrderDate);
-                        const leadTime = new Date(item.LeadTime);
-
-                        const totalHours = (leadTime.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
-                        const elapsedHours = (now.getTime() - lastOrder.getTime()) / (1000 * 60 * 60);
-
-                        // If totalHours <= 0 (invalid), set progress to 100 to avoid NaN
-                        const progress = totalHours > 0 ? Math.min((elapsedHours / totalHours) * 100, 100) : 100;
-                        const isDelayed = now > leadTime;
-
-                        const hoursDiff = (leadTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-                        const timeStatus = isDelayed
-                          ? `${Math.abs(Math.round(hoursDiff))} hours overdue`
-                          : `${Math.round(hoursDiff)} hours left`;
-
-                        return (
-                          <div key={index} className="border border-gray-200 rounded-lg p-4">
-                            <div className="flex justify-between items-center mb-2">
-                              <div>
-                                <p className="font-semibold text-xs text-gray-70 capitalize">
-                                  {item.ProductName} <span className="uppercase">({item.ProductSKU})</span>
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  Ref: {item.ReferenceNumber} • Supplier: {item.SupplierName}
-                                </p>
-                              </div>
-                              <div>
-                                <span
-                                  className={`px-3 py-1 rounded-full text-xs font-medium ${isDelayed ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
-                                    }`}
-                                >
-                                  {isDelayed ? 'Delayed' : 'On Track'}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="w-full bg-gray-200 rounded-full h-4">
-                              <div
-                                className={`h-4 rounded-full ${isDelayed ? 'bg-red-500' : 'bg-blue-500'}`}
-                                style={{ width: `${progress}%` }}
-                              ></div>
-                            </div>
-
-                            <div className="flex justify-between text-xs text-gray-500 mt-1">
-                              <span>Last Order: {new Date(item.LastOrderDate).toLocaleString()}</span>
-                              <span>Lead Time: {new Date(item.LeadTime).toLocaleString()}</span>
-                              <span>Now: {now.toLocaleString()}</span>
-                            </div>
-
-                            <div className={`mt-2 text-xs font-semibold ${isDelayed ? 'text-red-600' : 'text-blue-600'}`}>
-                              {timeStatus}
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           )}
         </UserFetcher>
